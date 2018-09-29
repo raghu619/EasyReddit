@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">EasyReddit</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+
+
+
+    <!--reddit data keys-->
+
+    <string translatable="false" name="reddit_data_id">id</string>
+    <string translatable="false" name="reddit_data_post_id">post_id</string>
+    <string translatable="false" name="reddit_data_title">title</string>
+    <string translatable="false" name="reddit_data_author">author</string>
+    <string translatable="false" name="reddit_data_permalink">permalink</string>
+    <string translatable="false" name="reddit_data_score">score</string>
+    <string translatable="false" name="reddit_data_num_comments">num_comments</string>
+    <string translatable="false" name="reddit_data_image_url">image_url</string>
+    <string translatable="false" name="reddit_data_url">url</string>
+    <string translatable="false" name="reddit_data_thumbnail">thumbnail</string>
+    <string translatable="false" name="reddit_data_posted_on">postedOn</string>
+    <string translatable="false" name="reddit_data_posted_on1">posted_on</string>
+    <string translatable="false" name="reddit_data_subreddit">subreddit</string>
+    <string translatable="false" name="reddit_data_over_18">over_18</string>
+    <string translatable="false" name="reddit_data_created_utc">created_utc</string>
+    <string translatable="false" name="reddit_data_points">points</string>
+    <string translatable="false" name="reddit_data_favorites">favorites</string>
+
+
+
+
+
+
+
+
+
+</resources>
