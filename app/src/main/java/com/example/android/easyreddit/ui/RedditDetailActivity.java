@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.example.android.easyreddit.R;
+import com.example.android.easyreddit.fragments.RedditDetailFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +49,12 @@ public class RedditDetailActivity extends AppCompatActivity {
     }
 
     private void initFragmentView() {
+
+        RedditDetailFragment redditDetailFragment=new RedditDetailFragment();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.frameLayout,redditDetailFragment)
+                .commit();
 
 
 

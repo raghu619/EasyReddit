@@ -12,8 +12,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.easyreddit.R;
 import com.example.android.easyreddit.model.RedditData;
+import com.example.android.easyreddit.utils.GlideApp;
+import com.example.android.easyreddit.utils.GlideImageCacheModule;
 
 import java.util.List;
 
@@ -62,8 +65,8 @@ public class RedditListViewAdapter extends RecyclerView.Adapter<RedditListViewAd
             {
                  RedditData redditData=mlistItemsList.get(position);
 
-
-                Glide.with(mContext).load(redditData.getThumbnail()).into(holder.mthumbnail);
+                 GlideApp.with(mContext).load(redditData.getThumbnail())
+                         .diskCacheStrategy(DiskCacheStrategy.DATA).into(holder.mthumbnail);
 
                holder.mtitle.setText(redditData.getTitle());
                holder.mcomments.setText(String.valueOf(redditData.getNumComments()));
@@ -114,6 +117,11 @@ public class RedditListViewAdapter extends RecyclerView.Adapter<RedditListViewAd
 
                 @Override
                 public void onClick(View v) {
+
+
+                    if (mItemClickListener != null) {
+                        mItemClickListener.OnItemClick(v, getAdapterPosition());
+                    }
 
                 }
             }

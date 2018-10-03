@@ -7,6 +7,8 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="title_favourites">Favourites</string>
+
 
 
 
@@ -32,8 +34,20 @@
 
 
 
+<string name="Subreddits_shared_preferences">com.udacity.easyreddit</string>
+ <string name="Subreddits_key">SUBREDDIT_KEY</string>
 
 
+    <string translatable="false" name="first_run">firstrun</string>
+    <string translatable="false" name="initial_subs">home,all,announcements,Art,AskReddit,askscience,aww,blog,books,creepy,dataisbeautiful,DIY,Documentaries,EarthPorn,explainlikeimfive,Fitness,food,funny,Futurology,gadgets,gaming,GetMotivated,gifs,history,IAmA,InternetIsBeautiful,Jokes,LifeProTips,listentothis,mildlyinteresting,movies,Music,news,nosleep,nottheonion,OldSchoolCool,personalfinance,philosophy,photoshopbattles,pics,science,Showerthoughts,space,sports,television,tifu,todayilearned,TwoXChromosomes,UpliftingNews,videos,worldnews,WritingPrompts</string>
+
+    <string name="hot">Hot</string>
+    <string name="new1">New</string>
+    <string name="top">Top</string>
+    <string name="controversial">Controversial</string>
+    <string name="sort">sort</string>
+
+    <string translatable="false" name="HomePage">home</string>
 
 
 
