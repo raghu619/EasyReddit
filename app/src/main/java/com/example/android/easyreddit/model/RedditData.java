@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by raghvendra on 23/9/18.
  */
 
-public class RedditData  implements Parcelable {
+public class RedditData implements Parcelable {
 
 
 

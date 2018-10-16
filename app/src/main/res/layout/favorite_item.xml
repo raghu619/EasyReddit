@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@android:color/white"
-                tools:text="condition500" />
+                tools:text="@string/comment_testing_Text" />
         </LinearLayout>
 
         <LinearLayout
@@ -54,6 +54,7 @@
                     android:layout_height="37dp"
                     android:focusable="false"
                     android:paddingRight="10sp"
+                    android:contentDescription="@string/favorite_content_rating_view"
                     android:src="@drawable/ratings" />
 
                 <TextView
@@ -64,7 +65,6 @@
                     android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
                     android:gravity="end"
-
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
                     tools:text="10" />
@@ -80,6 +80,7 @@
                     android:layout_height="36dp"
                     android:focusable="false"
                     android:paddingRight="10sp"
+                    android:contentDescription="@string/favorite_content_comment_view"
                     android:src="@drawable/chat" />
 
                 <TextView

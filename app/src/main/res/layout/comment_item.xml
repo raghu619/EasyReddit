@@ -9,30 +9,27 @@
 
     >
 
-    <RelativeLayout
-        android:id="@+id/view2"
-        android:layout_width="5dp"
-        android:layout_height="match_parent" />
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/view2"-->
+        <!--android:layout_width="5dp"-->
+        <!--android:layout_height="match_parent" />-->
 
     <LinearLayout
         android:id="@+id/card_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="4dp"
 
-        android:paddingStart="4dp">
+        >
 
-        <RelativeLayout
-            android:id="@+id/view"
-            android:layout_width="5dp"
-            android:layout_height="match_parent" />
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/view"-->
+            <!--android:layout_width="5dp"-->
+            <!--android:layout_height="match_parent" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-
             android:orientation="vertical">
 
             <LinearLayout
@@ -60,14 +57,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="10dp"
-                        android:text="asdsddsds" />
+                        android:text="@string/comment_testing_Text" />
 
                     <TextView
                         android:id="@+id/points"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="10dp"
-                        android:text="asdsddsds"/>
+                        android:text="@string/comment_testing_Text"/>
 
 
                 </LinearLayout>
@@ -76,8 +73,14 @@
                 <TextView
                     android:id="@+id/body"
                     android:layout_width="match_parent"
-                    android:text="asdsddsds"
+                    android:text="@string/comment_testing_Text"
                     android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/cardview_dark_background"></View>
+
             </LinearLayout>
 
         </LinearLayout>

@@ -155,6 +155,25 @@ import android.support.annotation.Nullable;
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        int update;
+        switch (mUriMatcher.match(uri)){
+
+            case TABLE_ITEM:{
+                update = db.update  (FavoriteContract.favorite.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+
+            default:
+                throw new IllegalArgumentException("Unsupported Uri For Updating " + uri);
+
+
+
+        }
+
+        if(getContext()!=null)
+            getContext().getContentResolver().notifyChange(uri, null);
+
+        return update;
     }
 }

@@ -9,6 +9,92 @@
 
     <string name="title_favourites">Favourites</string>
 
+    <string name="refresh_toast_message">List is Refreshed</string>
+    <string name="toast_sorting_message">Sorting cannot be applied to Home and Favourites.</string>
+
+    <string name="favorites_toast_message">SuccessFully added as a Favorite</string>
+
+    <string name="share_link_url">url</string>
+    <string name="share_link_title">Share link</string>
+
+    <string name="tracker_screen_detail_activity">Detail Activity</string>
+
+    <string name="comments_points"> Points</string>
+
+
+    <string name="comment_testing_Text">Testing Comments</string>
+
+
+    <string name="favorite_content_rating_view">ratings view</string>
+    <string name="favorite_content_comment_view">Comments view</string>
+    <string name="favorite_header">Favorites</string>
+    <string name="no_favorite_header">No_favourites</string>
+    <string name="no_internet_content_image">No Internet Image</string>
+
+    <string name="no_internet_no_connection_text">Make Sure that Device is Connected to Internet</string>
+
+    <string name="no_internet_tab_retry_text">Tab to Retry</string>
+
+    <string name="no_internet_tab_retry_image_button">retry Image button</string>
+
+    <string name="reddit_list_item_title_view">Title View</string>
+
+    <string name="reddit_list_item_title_view_image_description">Thumbnail Image</string>
+
+
+    <string name="reddit_list_item_comment_view">12333</string>
+
+    <string name="reddit_list_item_comment_view_image_description">Comments view</string>
+
+    <string name="reddit_list_item_rating_view">1245</string>
+
+    <string name="reddit_list_item_rating_view_image_description">ratings view</string>
+
+
+    <!--<string name="unsupported_content_provider_exception">Unsupported Uri</string>-->
+    <!--<string name="unsupported_content_provider_insertion_exception">Unsupported Uri For Insertion</string>-->
+    <!--<string name="unsupported_content_provider_deletion_exception">Unsupported Uri For Deletion </string>-->
+
+
+    <!--progress dialog messages-->
+                    <string name="dialog_title">Loading.....</string>
+
+                    <string name="dialog_message">Fetching Data</string>
+
+
+                             <!--fragment comments Arguments-->
+
+                 <string name="fragment_comments_data">fragmentdata</string>
+
+
+
+
+                           <!--comments json keys-->
+            <string name="comments_json_data_key">data</string>
+            <string name="comments_json_children_key">children</string>
+            <string name="comments_json_body_key">body</string>
+            <string name="comments_json_created_utc_key">created_utc</string>
+            <string name="comments_json_ups_key">ups</string>
+            <string name="comments_json_downs_key">downs</string>
+            <string name="comments_json_author_key">author</string>
+
+
+
+
+                                <!--sorting category-->
+
+                    <string name="sort_category_hot">hot</string>
+                    <string name="sort_category_new">new</string>
+                    <string name="sort_category_controversial">controversial</string>
+                    <string name="sort_category_top">top</string>
+
+
+                    <!--Google analytics Strings-->
+                <string name="tracker_main_list_activiy">MainList Activity</string>
+
+
+
+    <string name="saved_instance_commments_key"  translatable="false">save comments</string>
 
 
 
@@ -34,8 +120,65 @@
 
 
 
-<string name="Subreddits_shared_preferences">com.udacity.easyreddit</string>
- <string name="Subreddits_key">SUBREDDIT_KEY</string>
+
+                        <!--reddit Json fetching keys-->
+
+
+    <string translatable="false" name="reddit_json_data_key">data</string>
+
+    <string translatable="false" name="reddit_json_after_key">after</string>
+
+
+    <string translatable="false" name="reddit_json_children_key">children</string>
+
+    <string translatable="false" name="reddit_json_title_key">title</string>
+
+    <string translatable="false" name="reddit_json_author_key">author</string>
+
+    <string translatable="false" name="reddit_json_num_comments_key">num_comments</string>
+
+    <string translatable="false" name="reddit_json_score_key">score</string>
+
+    <string translatable="false" name="reddit_json_thumbnail_key">thumbnail</string>
+
+    <string translatable="false" name="reddit_json_over_18_key">over_18</string>
+
+    <string translatable="false" name="reddit_json_url_key">url</string>
+
+    <string translatable="false" name="reddit_json_id_key">id</string>
+
+    <string translatable="false" name="reddit_json_subreddit_key">subreddit</string>
+
+    <string translatable="false" name="reddit_json_permalink_key">permalink</string>
+
+    <string translatable="false" name="reddit_json_created_utc_key">created_utc</string>
+
+    <string translatable="false" name="reddit_json_preview_key">preview</string>
+
+    <string translatable="false" name="reddit_json_images_key">images</string>
+
+    <string translatable="false" name="reddit_json_resolutions_key">resolutions</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <string name="Subreddits_shared_preferences">com.udacity.easyreddit</string>
+             <string name="subreddits_key">SUBREDDIT_KEY</string>
 
 
     <string translatable="false" name="first_run">firstrun</string>
@@ -48,6 +191,33 @@
     <string name="sort">sort</string>
 
     <string translatable="false" name="HomePage">home</string>
+
+
+
+    <string translatable="false" name="listitems">listItems</string>
+    <string name="open_in_browser">Open In Browser</string>
+    <string name="share">Share</string>
+    
+    
+    <string name="google_ads_id">ca-app-pub-3940256099942544/6300978111</string>
+
+
+    <string translatable="false" name="liststate_key">listState</string>
+
+
+
+
+
+
+                                          <!--widgetkeymodels-->
+
+    <string translatable="false" name="data_update_key">com.udacity.easyreddit.ACTION_DATA_UPDATED</string>
+    <string translatable="false" name="arg_item_id">item_id</string>
+
+
+
+
+
 
 
 

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:baselineAligned="false"
+        android:divider="?android:attr/dividerHorizontal"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        tools:context=".ui.MainActivity">
+
+
+     <LinearLayout
+         android:layout_width="0dp"
+         android:layout_height="match_parent"
+         android:layout_weight="3"
+         android:orientation="vertical">
+
+         <android.support.v4.widget.SwipeRefreshLayout
+             android:id="@+id/refresh_main_content"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             tools:context=".ui.MainActivity"
+             xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <android.support.v7.widget.RecyclerView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/reddititem_list"
+            android:name="com.example.android.easyreddit.MainActivity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:nestedScrollingEnabled="false"
+            android:descendantFocusability="afterDescendants"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context="com.example.android.easyreddit.ui.MainActivity"
+            tools:listitem="@layout/reddit_list_item"
+
+            />
+
+         </android.support.v4.widget.SwipeRefreshLayout>
+
+     </LinearLayout>
+
+
+        <FrameLayout
+            android:id="@+id/reddititem_detail_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3" />
+
+
+
+
+
+
+    </LinearLayout>
+</FrameLayout>

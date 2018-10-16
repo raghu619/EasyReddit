@@ -53,7 +53,7 @@ public class CommentsViewAdapter extends RecyclerView.Adapter<CommentsViewAdapte
 
             CommentData comment_data=mcommentArrayList.get(position);
             holder.mauthor.setText(comment_data.getAuthor());
-            holder.mpoints.setText(comment_data.getPoints() + " Points");
+            holder.mpoints.setText(comment_data.getPoints() + mContext.getString(R.string.comments_points));
             holder.mbody.setText(comment_data.getHtmlText());
             holder.mpostedOn.setText(comment_data.getPostedOn());
 
@@ -74,8 +74,7 @@ public class CommentsViewAdapter extends RecyclerView.Adapter<CommentsViewAdapte
                 protected TextView mpostedOn;
                 @BindView(R.id.points)
                 protected TextView mpoints;
-                @BindView(R.id.view)
-                protected RelativeLayout  mlevelIndicator ;
+
                 @BindView(R.id.card_linear)
                 LinearLayout mcontainer;
 

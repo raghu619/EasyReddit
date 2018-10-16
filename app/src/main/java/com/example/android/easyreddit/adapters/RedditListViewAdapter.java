@@ -35,7 +35,7 @@ public class RedditListViewAdapter extends RecyclerView.Adapter<RedditListViewAd
     private Context mContext;
 
     OnItemClickListener mItemClickListener;
-    private int focusedItem = 0;
+
 
 
     public interface  OnItemClickListener{
@@ -65,7 +65,7 @@ public class RedditListViewAdapter extends RecyclerView.Adapter<RedditListViewAd
             {
                  RedditData redditData=mlistItemsList.get(position);
 
-                 GlideApp.with(mContext).load(redditData.getThumbnail())
+                 GlideApp.with(mContext).load(redditData.getThumbnail()).placeholder(R.drawable.placeimg)
                          .diskCacheStrategy(DiskCacheStrategy.DATA).into(holder.mthumbnail);
 
                holder.mtitle.setText(redditData.getTitle());
