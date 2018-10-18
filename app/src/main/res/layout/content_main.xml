@@ -11,36 +11,56 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_main_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".ui.MainActivity"
-
-        xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-        <android.support.v7.widget.RecyclerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/reddititem_list"
-            android:name="com.example.android.easyreddit.MainActivity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:descendantFocusability="afterDescendants"
-            android:nestedScrollingEnabled="false"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context="com.example.android.easyreddit.ui.MainActivity"
-            tools:listitem="@layout/reddit_list_item"
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+            <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/refresh_main_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ui.MainActivity">
+            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/reddititem_list"
+                android:name="com.example.android.easyreddit.MainActivity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:descendantFocusability="afterDescendants"
+                android:nestedScrollingEnabled="false"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:context="com.example.android.easyreddit.ui.MainActivity"
+                tools:listitem="@layout/reddit_list_item"
+
+                />
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
+
+        </RelativeLayout>
+
+    <TextView
+        android:id="@+id/no_favorites_text_view"
+        android:layout_width="331dp"
+        android:layout_height="86dp"
+        android:layout_gravity="center"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="@string/no_favorites"
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceLarge" />
+
+
 
 
 

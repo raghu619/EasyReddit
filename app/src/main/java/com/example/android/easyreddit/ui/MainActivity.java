@@ -2,7 +2,9 @@ package com.example.android.easyreddit.ui;
 
 import android.app.ActivityOptions;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -33,17 +35,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.android.easyreddit.R;
 import com.example.android.easyreddit.adapters.RedditListViewAdapter;
+import com.example.android.easyreddit.data.FavoriteContract;
 import com.example.android.easyreddit.data.FavoriteCursorLoader;
 import com.example.android.easyreddit.fragments.RedditDetailFragment;
 import com.example.android.easyreddit.googleanalytics.AnalyticsApplication;
@@ -68,14 +71,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements RedditListViewAdapter.OnItemClickListener,LoaderManager.LoaderCallbacks<Cursor>,RedditDetailActivity.CommentsProcessor {
 
-    private static String LOG_TAG = MainActivity.class.getSimpleName();
-    private  Tracker mTracker;
-
-
-
-    private AnalyticsApplication global_data;
-
-
+    private static final int DRAWER_MENU_GROUP_ID=34;
     public  static  int   COLUMN_POST_ID=1;
     public  static  int   COLUMN_AUTHOR=2;
     public  static  int   COLUMN_THUMBNAIL=3;
@@ -88,101 +84,69 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     public  static  int   COLUMN_FAVORITES=10;
     public  static  int   COLUMN_POSTED_ON=11;
     public  static  int   COLUMN_SUBREDDIT =12;
-
-
-    private static final int DRAWER_MENU_GROUP_ID=34;
-
-    private  Bundle  mSaveInstance;
-
-
+    private static String LOG_TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
-
-
-    private ActionBarDrawerToggle mDrawerToggle;
-
     @BindView(R.id.reddititem_list)
     RecyclerView mRecyclerView;
-
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-
     @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
-
-
-
     @BindView(R.id.no_internet_layout_id)
     View no_internet_layout_id;
-
     @BindView(R.id.main_content_layout)
     View main_content_layout;
-
-
     @BindView(R.id.refresh_main_content)
     SwipeRefreshLayout mrefresherLayout;
-
-
-
     @BindView(R.id.connection_retry)
     ImageButton mconnectionImageButton;
-
-
+    @BindView(R.id.no_favorites_text_view)
+    TextView mNoFavoritesView;
     Menu drawerMenu;
-
     SharedPreferences mprefs;
 
-    Parcelable mListState;
+    int position=0;
+    private  Tracker mTracker;
+    private AnalyticsApplication mvolleyNetworkQueue;
+    private  Bundle  mSaveInstance;
+    private ActionBarDrawerToggle mDrawerToggle;
     private ArrayList<RedditData> mreddit_item_list = new ArrayList<RedditData>();
-
     private String sortBy = "";
     private String subReddit = "";
-    private String mSearch = "";
-    private int counter = 0;
 
 
     private RedditListViewAdapter adapter;
-
-
     private boolean mTwoPane;
     private String after_id;
 
     private Menu sortMenu;
-
     private SearchView mSearchView;
-
+    private String titleString="";
+    private ProgressDialog mProgressDialog;
     private  ArrayList<CommentData> mcomments_data=new ArrayList<>();
-    ;
 
-    int position=0;
-
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(isNetworkAvailable())settingNavbarSubreddits();
-       mTracker.setScreenName(getString(R.string.tracker_main_list_activiy));
-       mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setupWindowAnimations();
+        mProgressDialog=new ProgressDialog(this);
+        mProgressDialog.setMessage(getString(R.string.dialog_message));
+        mProgressDialog.setTitle(getString(R.string.dialog_title));
 
+        mNoFavoritesView.setVisibility(View.GONE);
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        global_data=AnalyticsApplication.getmInstance();
-
+        mvolleyNetworkQueue =AnalyticsApplication.getmInstance();
         mTracker = application.getDefaultTracker();
-
         mSaveInstance=savedInstanceState;
-
+        settingUpToolBar();
+        drawerMenu = mNavigationView.getMenu();
+        mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
+        settingUpDrawerLayout();
+        settingNavbarSubreddits();
+        settingUpNavigationView();
         mrefresherLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_orange_dark));
         mrefresherLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -190,10 +154,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
                 final  Bundle savedInstance=mSaveInstance;
-
-
                 initView(savedInstance);
-
                 Toast.makeText(MainActivity.this, getString(R.string.refresh_toast_message), Toast.LENGTH_SHORT).show();
 
 
@@ -224,37 +185,38 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
     private void initView(Bundle savedInstanceState) {
         if (isNetworkAvailable()) {
-
             no_internet_layout_id.setVisibility(View.GONE);
             main_content_layout.setVisibility(View.VISIBLE);
-            settingUpToolBar();
-
-            drawerMenu = mNavigationView.getMenu();
-
-            mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
-
-
-            settingUpDrawerLayout();
-            settingNavbarSubreddits();
-
-            settingUpNavigationView();
-
-
-
-
-
-
-
-
             if (savedInstanceState == null) {
-                makingCustomUrl(getResources().getString(R.string.HomePage));
 
-                getSupportActionBar().setTitle(R.string.HomePage);
+                if(TextUtils.isEmpty(titleString)) {
+                    makingCustomUrl(getResources().getString(R.string.HomePage));
+                    getSupportActionBar().setTitle(R.string.HomePage);
+                }
+                else {
+                    makingCustomUrl(titleString);
+                    toolbar.setTitle(titleString);
 
-            } else {
+                }
 
+
+
+
+
+                Log.v(LOG_TAG,subReddit);
+
+
+            }
+            else {
+
+
+               subReddit=savedInstanceState.getString(getString(R.string.reddit_list_toolbar_string));
+               if(!mrefresherLayout.isRefreshing())
+               getSupportActionBar().setTitle(subReddit);
 
                 mreddit_item_list = savedInstanceState.getParcelableArrayList(getString(R.string.listitems));
+                if(adapter!=null)
+                    adapter=null;
                 adapter = new RedditListViewAdapter(this, mreddit_item_list);
                 mRecyclerView.setAdapter(adapter);
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -270,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
 
-            sortView(false, getString(R.string.sort));
+            //sortView(false, getString(R.string.sort));
 
 
         }
@@ -279,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
           no_internet_layout_id.setVisibility(View.VISIBLE);
-            main_content_layout.setVisibility(View.GONE);
+          main_content_layout.setVisibility(View.GONE);
 
 
         }
@@ -289,16 +251,14 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     }
 
     private void settingNavbarSubreddits() {
-     if(mprefs.getBoolean(getString(R.string.first_run),true)){
+      if(mprefs.getBoolean(getString(R.string.first_run),true)){
 
          mprefs.edit().putString(getString(R.string.subreddits_key),getString(R.string.initial_subs)).commit();
          mprefs.edit().putBoolean(getString(R.string.first_run),false).commit();
 
-
-     }
+      }
 
         String subString = mprefs.getString(getString(R.string.subreddits_key), "");
-
         List<String>mItems= Arrays.asList(subString.split(","));
         for(int i=0;i<mItems.size();i++){
             MenuItem item=drawerMenu.add(DRAWER_MENU_GROUP_ID, Menu.NONE, Menu.NONE,mItems.get(i));
@@ -306,11 +266,12 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
         }
 
+
         mNavigationView.setItemIconTintList(null);
 
 
 
-    }
+      }
 
     private void settingUpNavigationView() {
 
@@ -319,12 +280,19 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
 
+                            mNoFavoritesView.setVisibility(View.GONE);
+                            mrefresherLayout.setEnabled(true);
+
+
                             if(item.getGroupId()==R.id.fav_group){
 
 
                                 initFavoriteLoader();
-                                toolbar.setTitle("Favorites");
+                                toolbar.setTitle(getString(R.string.title_favourites));
                                 mDrawerLayout.closeDrawers();
+
+                                titleString=getString(R.string.title_favourites);
+
                                 return true;
                             }
 
@@ -335,8 +303,11 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
                                 return true;
                             }
-                            else
+                            else {
                                 makingCustomUrl(item.toString());
+
+                                titleString = item.toString();
+                            }
 
 
                             mDrawerLayout.closeDrawers();
@@ -368,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
                     toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+
                 }
 
 
@@ -375,43 +347,43 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
 
-                   public  void makingCustomUrl(String subReddit) {
+               public  void makingCustomUrl(String subReddit) {
 
 
-                       this.subReddit = subReddit;
-                       counter = 0;
-                       toolbar.setTitle(subReddit);
+                   this.subReddit = subReddit;
 
-                       String subRedditSortBy = "";
-                       if (!TextUtils.isEmpty(sortBy)) {
+                   toolbar.setTitle(subReddit);
 
-                           subRedditSortBy = "/" + sortBy;
-                       }
+                   String subRedditSortBy = "";
+                   if (!TextUtils.isEmpty(sortBy)) {
 
-                       if (mSearchView != null) {
-                           mSearchView.setQuery("", false);
-                           mSearchView.setIconified(true);
-                       }
-
-                       if (subReddit.equals(getResources().getString(R.string.HomePage))) {
-                           subReddit = AppConstants.reddit_base_url + AppConstants.json_end;
-                           sortView(false, getString(R.string.sort));
-
-
-                       } else {
-
-                           sortView(true, getString(R.string.sort));
-
-                           subReddit = AppConstants.reddit_base_url + AppConstants.subreddit_url +
-                                   subReddit +
-                                   subRedditSortBy +
-                                   AppConstants.json_end;
-                       }
-
-                       updateList(subReddit);
-
-
+                       subRedditSortBy = "/" + sortBy;
                    }
+
+                   if (mSearchView != null) {
+                       mSearchView.setQuery("", false);
+                       mSearchView.setIconified(true);
+                   }
+
+                   if (subReddit.equals(getResources().getString(R.string.HomePage))) {
+                       subReddit = AppConstants.reddit_base_url + AppConstants.json_end;
+                       sortView(false, getString(R.string.sort));
+
+
+                   } else {
+
+                       sortView(true, getString(R.string.sort));
+
+                       subReddit = AppConstants.reddit_base_url + AppConstants.subreddit_url +
+                               subReddit +
+                               subRedditSortBy +
+                               AppConstants.json_end;
+                   }
+
+                   updateList(subReddit);
+
+
+               }
 
 
 
@@ -513,8 +485,15 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                                         if(!mrefresherLayout.isRefreshing()) {
 
                                             if (mTwoPane) {
+
+
                                                 String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(0).getPermalink() + AppConstants.jsonExt;
+                                                 mProgressDialog.show();
+                                                mProgressDialog.setCancelable(false);
+                                                mProgressDialog.setCanceledOnTouchOutside(false);
+
                                                 fetchingCommentsFromUrl(commentsUrl, MainActivity.this);
+
                                             }
 
                                         }
@@ -530,32 +509,12 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
 
-                                  }
-
-
-
-                                        },
-
-                            new Response.ErrorListener() {
+                                  }  }, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
 
                                             } });
-
-
-
-
-
-
-
-
-
-
-                    global_data.add_request_to_queue(jsonObjectRequest);
-
-
-
-
+                    mvolleyNetworkQueue.add_request_to_queue(jsonObjectRequest);
 
                 }
 
@@ -567,6 +526,9 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                       if( mTwoPane) {
                           this.position=position;
                           String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(position).getPermalink() + AppConstants.jsonExt;
+                          mProgressDialog.show();
+                          mProgressDialog.setCancelable(false);
+                          mProgressDialog.setCanceledOnTouchOutside(false);
                           fetchingCommentsFromUrl(commentsUrl,this);
                       }
 
@@ -616,7 +578,10 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
 
-        return new FavoriteCursorLoader(this);
+
+
+        return new CursorLoader(this,FavoriteContract.favorite.CONTENT_URI,null,
+                FavoriteContract.favorite.COLUMN_FAVORITES+"=?",new String[]{Integer.toString(1)},null);
     }
 
     @Override
@@ -624,15 +589,27 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
 
+
+        if(adapter!=null)
+            adapter.clearAdapter();
+
+
+        if(data.getCount()==0)
+            mNoFavoritesView.setVisibility(View.VISIBLE);
+
+                mrefresherLayout.setEnabled(false);
+
                  gettingDataFromCursor(data);
 
-                  adapter.SetOnItemClickListener(this);
+                 adapter.SetOnItemClickListener(this);
 
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+
+
 
     }
 
@@ -662,6 +639,8 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
             }
+            if(adapter!=null)
+               adapter=null;
 
             updateView(mreddit_item_list);
 
@@ -670,6 +649,8 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
      private  void updateView( ArrayList<RedditData> reddit_item_list){
+
+
         adapter=new RedditListViewAdapter(this,reddit_item_list);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setHasFixedSize(true);
@@ -691,6 +672,9 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
         getLoaderManager().initLoader(0,null,this);
+        adapter.notifyDataSetChanged();
+
+
 
     }
 
@@ -822,7 +806,9 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
         fragment.setArguments(arguments);
 
+
       getSupportFragmentManager().beginTransaction().replace(R.id.reddititem_detail_container,fragment).commit();
+        mProgressDialog.dismiss();
 
     }
 
@@ -849,7 +835,11 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+
         outState.putParcelableArrayList(getString(R.string.listitems),mreddit_item_list);
+
+
+        outState.putString(getString(R.string.reddit_list_toolbar_string),subReddit);
 
     }
 
@@ -866,23 +856,25 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     @Override
     protected void onStart() {
         super.onStart();
-        initView(  mSaveInstance);
 
-    }
+        if (isNetworkAvailable()) {
 
-    private void setupWindowAnimations() {
+            no_internet_layout_id.setVisibility(View.GONE);
+            main_content_layout.setVisibility(View.VISIBLE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Slide slide = new Slide();
-            slide.setSlideEdge(Gravity.LEFT);
-            slide.setDuration(500);
-            getWindow().setEnterTransition(slide);
+            }
+            else {
 
-            Fade fade=new Fade();
-            fade.setDuration(500);
-            getWindow().setExitTransition(fade);
+            no_internet_layout_id.setVisibility(View.VISIBLE);
+            main_content_layout.setVisibility(View.GONE);
+
+
         }
+
+
     }
+
+
 
 
     @Override
@@ -898,7 +890,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     public void fetchingCommentsFromUrl(String url, final RedditDetailActivity.CommentsProcessor processor){
 
 
-//      requestQueue= Volley.newRequestQueue(this);
+
         JsonArrayRequest jsonArRequest=new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -956,12 +948,13 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         });
 
 
-       global_data.add_request_to_queue(jsonArRequest);
+       mvolleyNetworkQueue.add_request_to_queue(jsonArRequest);
 
 
 
 
-        }
+    }
+
 
 
 
@@ -1012,6 +1005,43 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         return date;
 
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(isNetworkAvailable())settingNavbarSubreddits();
+
+
+
+        if(mSaveInstance==null) {
+
+            if(adapter!=null)
+                adapter=null;
+            if (TextUtils.isEmpty(titleString)) {
+
+                getSupportActionBar().setTitle(R.string.HomePage);
+                makingCustomUrl(getString(R.string.HomePage));
+
+            } else if (titleString == getString(R.string.title_favourites)) {
+
+
+                getLoaderManager().restartLoader(0, null, this);
+            } else {
+                toolbar.setTitle(titleString);
+                makingCustomUrl(titleString);
+
+
+            }
+
+        }
+        mTracker.setScreenName(getString(R.string.tracker_main_list_activiy));
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+
+
 
 
 }

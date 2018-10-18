@@ -60,7 +60,7 @@ import android.support.annotation.Nullable;
 
         }
 
-        if(getContext()!=null)
+
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -108,7 +108,7 @@ import android.support.annotation.Nullable;
         }
 
 
-        if(getContext()!=null)
+
             getContext().getContentResolver().notifyChange(uri, null);
 
 
@@ -145,7 +145,7 @@ import android.support.annotation.Nullable;
 
         }
 
-        if(getContext()!=null && delete!=0)
+        if( delete!=0)
             getContext().getContentResolver().notifyChange(uri, null);
 
 

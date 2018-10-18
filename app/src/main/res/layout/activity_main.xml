@@ -23,8 +23,7 @@
         <include
         layout="@layout/app_bar_main"
         android:id="@+id/main_content_layout"
-
-        >
+            >
 
     </include>
 

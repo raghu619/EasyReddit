@@ -1,15 +1,16 @@
 package com.example.android.easyreddit.fragments;
 
 
-import android.app.ProgressDialog;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,6 +19,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,78 +54,35 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RedditDetailFragment  extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
+public class RedditDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private static String LOG_TAG = RedditDetailFragment.class.getSimpleName();
-    private Bundle mextras;
-    private boolean isFavourite;
-    private Tracker mTracker;
-    private  String request_url;
     String id;
     RecyclerView.LayoutManager mLayoutManager;
     ArrayList<CommentData> mcomments_data;
-
-
-
-
     @BindView(R.id.commentRecycler)
     RecyclerView mRecyclerView;
-
-
     @BindView(R.id.headerImage)
-    ImageView  mheaderImage;
-
-
-
+    ImageView mheaderImage;
     @BindView(R.id.comments)
     TextView mcomments;
-
-
-
     @BindView(R.id.score)
-       TextView mscore;
-
-
-
+    TextView mscore;
     CommentsViewAdapter mcommentViewAdapter;
-
-
-
     @BindView(R.id.menu)
     ImageButton menu;
-
-
     @BindView(R.id.addFav)
     ImageButton favStar;
-
-
     @BindView(R.id.linearheader)
     LinearLayout mheaderLayout;
-
-
     @BindView(R.id.headerTitle)
-       TextView mheaderTextView;
-
-
-
+    TextView mheaderTextView;
     @BindView(R.id.fragment_progress_bar)
     ProgressBar mprogressbar;
-
-
-
-    ProgressDialog progressDialog;
-
-
-
-    boolean Is;
-
-
-
-
-
-
+    private Bundle mextras;
+    private boolean isFavourite;
+    private Tracker mTracker;
 
 
     @Nullable
@@ -131,47 +90,50 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
 
-         View rootView=inflater.inflate(R.layout.fragment_detail,container,false);
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
 
-        mcomments_data=new ArrayList<>();
 
-        mextras =getActivity().getIntent().getExtras();
-        if( mextras==null  && getArguments()!=null){
+        mcomments_data = new ArrayList<>();
+
+        mextras = getActivity().getIntent().getExtras();
+        if (mextras == null && getArguments() != null) {
             mprogressbar.setVisibility(View.VISIBLE);
-            mextras=getArguments();
+            mextras = getArguments();
 
 
         }
 
 
+        id = mextras.getString(getString(R.string.reddit_data_id));
 
-        id =  mextras.getString(getString(R.string.reddit_data_id));
-
-       GlideApp.with(getActivity()).load(String.valueOf(mextras.get(getString(R.string.reddit_data_url)))).diskCacheStrategy(DiskCacheStrategy.DATA).listener(new
-              RequestListener<Drawable>() {
-                  @Override
-                  public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-
-
-                      mprogressbar.setVisibility(View.GONE);
-                      return false;
-                  }
-
-                  @Override
-                  public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                      mprogressbar.setVisibility(View.GONE);
-
-                      return false;
-                  }
-              }).into(mheaderImage);
+        GlideApp.with(getActivity()).load(String.valueOf(mextras.get(getString(R.string.reddit_data_url)))).diskCacheStrategy(DiskCacheStrategy.DATA).listener(new
+           RequestListener<Drawable>() {
+           @Override
+           public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
 
-        mcomments_data=getArguments().getParcelableArrayList(getString(R.string.fragment_comments_data));
-        mcommentViewAdapter=new CommentsViewAdapter(getActivity(),mcomments_data);
+               mprogressbar.setVisibility(View.GONE);
+               return false;
+           }
+
+           @Override
+           public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+               mprogressbar.setVisibility(View.GONE);
+
+                   return false;
+               }
+           }).into(mheaderImage);
+
+
+        mcomments_data = getArguments().getParcelableArrayList(getString(R.string.fragment_comments_data));
+        if(mcommentViewAdapter!=null)
+            mcommentViewAdapter=null;
+        mcommentViewAdapter = new CommentsViewAdapter(getActivity(), mcomments_data);
+
         mRecyclerView.setAdapter(mcommentViewAdapter);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -184,12 +146,10 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
         initLoader();
 
 
-
-
         favStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isFavourite){
+                if (!isFavourite) {
 
                     ContentValues values = new ContentValues();
                     values.put(FavoriteContract.favorite.COLUMN_TITLE, mextras.getString(getString(R.string.reddit_data_title)));
@@ -207,19 +167,20 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
                     getContext().getContentResolver().insert(FavoriteContract.favorite.CONTENT_URI, values);
 
                     favStar.setSelected(true);
-                    isFavourite=true;
+                    isFavourite = true;
 
-                    Toast.makeText(getContext(),getString(R.string.favorites_toast_message),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.favorites_toast_message), Toast.LENGTH_LONG).show();
 
 
-                }
-                else {
+                } else {
 
 
                     favStar.setSelected(false);
-                    isFavourite=false;
+                    isFavourite = false;
                     getContext().getContentResolver().delete(FavoriteContract.favorite.CONTENT_URI
-                            ,FavoriteContract.favorite.COLUMN_POST_ID+"=?",new String[]{id});
+                            , FavoriteContract.favorite.COLUMN_POST_ID + "=?", new String[]{id});
+
+                    Toast.makeText(getContext(), getString(R.string.favorites_deleted_toast_message), Toast.LENGTH_LONG).show();
 
 
                 }
@@ -243,7 +204,7 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 
-                        switch (item.getItemId()){
+                        switch (item.getItemId()) {
 
                             case R.id.open:
 
@@ -275,17 +236,10 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
         mAdView.loadAd(adRequest);
 
 
-
         return rootView;
 
 
     }
-
-
-
-
-
-
 
 
     private void initLoader() {
@@ -294,25 +248,23 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
     }
 
 
-
-
     @Override
     public Loader<Cursor> onCreateLoader(int Id, Bundle args) {
-        return new CursorLoader(getContext(),FavoriteContract.favorite.CONTENT_URI,null,
-                FavoriteContract.favorite.COLUMN_POST_ID+"=?",new String[]{String.valueOf(id)},null);
+        return new CursorLoader(getContext(), FavoriteContract.favorite.CONTENT_URI, null,
+                FavoriteContract.favorite.COLUMN_POST_ID + "=?", new String[]{String.valueOf(id)}, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        int fav=0;
-        isFavourite=false;
+        int fav = 0;
+        isFavourite = false;
 
-        if(data!=null && data.getCount()>0){
+        if (data != null && data.getCount() > 0) {
 
-            if(data.moveToFirst()){
+            if (data.moveToFirst()) {
 
-                fav=data.getInt(MainActivity.COLUMN_FAVORITES);
+                fav = data.getInt(MainActivity.COLUMN_FAVORITES);
 
 
             }
@@ -320,12 +272,11 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
 
         }
 
-        if(fav==1){
-            isFavourite=true;
+        if (fav == 1) {
+            isFavourite = true;
             favStar.setSelected(true);
-        }
-        else
-        favStar.setSelected(false);
+        } else
+            favStar.setSelected(false);
 
 
     }
@@ -342,9 +293,6 @@ public class RedditDetailFragment  extends Fragment implements LoaderManager.Loa
         mTracker.setScreenName(getString(R.string.tracker_screen_detail_activity));
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
-
-
-
 
 
 }

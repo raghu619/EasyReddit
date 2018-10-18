@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Parcelable;
@@ -41,22 +42,25 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RedditDetailActivity extends AppCompatActivity
-{
+public class RedditDetailActivity extends AppCompatActivity {
 
 
     private AnalyticsApplication global_data;
-    ArrayList<CommentData> mcomments_data=new ArrayList<>();
+    ArrayList<CommentData> mcomments_data = new ArrayList<>();
 
     private static String LOG_TAG = RedditDetailActivity.class.getSimpleName();
-    interface CommentsProcessor{
+
+    interface CommentsProcessor {
 
         void onSuccessLoad(ArrayList<CommentData> mcomments_data);
 
     }
+
     String id;
     String commentsUrl;
     CommentsProcessor processor;
+
+    SharedPreferences mprefs;
 
 
     @BindView(R.id.toolbar)
@@ -71,9 +75,12 @@ public class RedditDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reddit_detail);
 
-        global_data=AnalyticsApplication.getmInstance();
+        mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
 
-        mdialog=new ProgressDialog(this);
+
+        global_data = AnalyticsApplication.getmInstance();
+
+        mdialog = new ProgressDialog(this);
 
         mdialog.setTitle(getString(R.string.dialog_title));
 
@@ -81,14 +88,14 @@ public class RedditDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
         mdialog.show();
         setSupportActionBar(mtoolbar);
-        receiving_data=getIntent().getExtras();
+        receiving_data = getIntent().getExtras();
 
-        id=receiving_data.getString(getString(R.string.reddit_data_id));
+        id = receiving_data.getString(getString(R.string.reddit_data_id));
 
-        commentsUrl=AppConstants.reddit_base_url+ receiving_data.getString(getString(R.string.reddit_data_permalink))+AppConstants.jsonExt;
+        commentsUrl = AppConstants.reddit_base_url + receiving_data.getString(getString(R.string.reddit_data_permalink)) + AppConstants.jsonExt;
         setTitle(receiving_data.getString(getString(R.string.reddit_data_subreddit)));
 
-        Log.v(LOG_TAG,receiving_data.getString(getString(R.string.reddit_data_subreddit)));
+        Log.v(LOG_TAG, receiving_data.getString(getString(R.string.reddit_data_subreddit)));
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -97,17 +104,13 @@ public class RedditDetailActivity extends AppCompatActivity
         }
 
 
-
-        if(savedInstanceState==null) {
+        if (savedInstanceState == null) {
             processor = new CommentsProcessor() {
                 @Override
                 public void onSuccessLoad(ArrayList<CommentData> mcomments_data) {
 
                     initFragmentView(mcomments_data);
                     mdialog.dismiss();
-
-
-
 
 
                 }
@@ -117,13 +120,10 @@ public class RedditDetailActivity extends AppCompatActivity
             new CommentsAsyncTask().execute();
 
 
-
-        }
-
-        else {
+        } else {
 
             mcomments_data.clear();
-            mcomments_data=savedInstanceState.getParcelableArrayList(getString(R.string.saved_instance_commments_key));
+            mcomments_data = savedInstanceState.getParcelableArrayList(getString(R.string.saved_instance_commments_key));
             initFragmentView(mcomments_data);
             mdialog.dismiss();
 
@@ -131,37 +131,23 @@ public class RedditDetailActivity extends AppCompatActivity
         }
 
 
-
-
-
-
-
     }
 
     private void initFragmentView(ArrayList<CommentData> mcomments_data) {
 
 
-
-        RedditDetailFragment redditDetailFragment=new RedditDetailFragment();
-
+        RedditDetailFragment redditDetailFragment = new RedditDetailFragment();
 
 
-        Bundle data=new Bundle();
+        Bundle data = new Bundle();
 
-        data.putParcelableArrayList(getString(R.string.fragment_comments_data),mcomments_data);
+        data.putParcelableArrayList(getString(R.string.fragment_comments_data), mcomments_data);
 
         redditDetailFragment.setArguments(data);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout,redditDetailFragment)
+                .replace(R.id.frameLayout, redditDetailFragment)
                 .commit();
-
-
-
-
-
-
-
 
 
     }
@@ -172,23 +158,24 @@ public class RedditDetailActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == android.R.id.home){
-            NavUtils.navigateUpTo(this,new Intent(this,MainActivity.class));
-            return  true;
+        if (id == android.R.id.home) {
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(mainIntent);
+            // NavUtils.navigateUpTo(this,new Intent(this,MainActivity.class));
+
 
         }
-
 
 
         return super.onOptionsItemSelected(item);
     }
 
 
-    public void fetchingCommentsFromUrl(String url, final CommentsProcessor processor){
+    public void fetchingCommentsFromUrl(String url, final CommentsProcessor processor) {
 
 
-
-        JsonArrayRequest jsonArRequest=new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
@@ -211,26 +198,16 @@ public class RedditDetailActivity extends AppCompatActivity
                         settingCommentsData(data_object);
 
 
-
-
-
                     }
 
 
                     processor.onSuccessLoad(mcomments_data);
 
 
-
-
-
-
                 } catch (JSONException e) {
 
                     e.printStackTrace();
                 }
-
-
-
 
 
             }
@@ -245,12 +222,7 @@ public class RedditDetailActivity extends AppCompatActivity
         });
 
 
-       global_data.add_request_to_queue(jsonArRequest);
-
-
-
-
-
+        global_data.add_request_to_queue(jsonArRequest);
 
 
     }
@@ -259,44 +231,33 @@ public class RedditDetailActivity extends AppCompatActivity
     private void settingCommentsData(JSONObject data_object) {
 
 
-
-        CommentData commentData=new CommentData();
+        CommentData commentData = new CommentData();
 
         try {
 
 
-
-            commentData.setHtmlText(data_object.getString( getString(R.string.comments_json_body_key)));
-            Log.v("Checking_values",data_object.getString( getString(R.string.comments_json_body_key))+"\n"
-                    +data_object.getLong("created_utc"));
-            int points=data_object.getInt( getString(R.string.comments_json_ups_key))-data_object.getInt(getString(R.string.comments_json_downs_key));
-            commentData.setPoints(points+"");
+            commentData.setHtmlText(data_object.getString(getString(R.string.comments_json_body_key)));
+            Log.v("Checking_values", data_object.getString(getString(R.string.comments_json_body_key)) + "\n"
+                    + data_object.getLong("created_utc"));
+            int points = data_object.getInt(getString(R.string.comments_json_ups_key)) - data_object.getInt(getString(R.string.comments_json_downs_key));
+            commentData.setPoints(points + "");
             commentData.setAuthor(data_object.getString(getString(R.string.comments_json_author_key)));
             commentData.setPostedOn(getDate(data_object.getLong(getString(R.string.comments_json_created_utc_key))));
             mcomments_data.add(commentData);
 
 
-        }
-
-        catch (Exception e){
-
+        } catch (Exception e) {
 
 
         }
-
-
-
-
-
-
 
 
     }
 
-    private  String getDate(long time) {
+    private String getDate(long time) {
 
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(time*1000);
+        cal.setTimeInMillis(time * 1000);
         String date = DateFormat.format("HH:mm  dd/MM/yy", cal).toString();
         return date;
 
@@ -306,21 +267,9 @@ public class RedditDetailActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(getString(R.string.saved_instance_commments_key),mcomments_data);
+        outState.putParcelableArrayList(getString(R.string.saved_instance_commments_key), mcomments_data);
 
     }
-
-
-//    private void setupWindowAnimations() {
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            Slide slide = new Slide();
-//            slide.setSlideEdge(Gravity.LEFT);
-//            slide.setDuration(1000);
-//            getWindow().setExitTransition(slide);
-//        }
-//    }
-
 
 
     class CommentsAsyncTask extends AsyncTask
@@ -339,7 +288,7 @@ public class RedditDetailActivity extends AppCompatActivity
     }
 
 
-    }
+}
 
 
 

@@ -13,8 +13,8 @@
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
-        android:paddingRight="@dimen/abc_list_item_padding_horizontal_material">
+        android:paddingStart="@dimen/abc_list_item_padding_horizontal_material"
+        android:paddingEnd="@dimen/abc_list_item_padding_horizontal_material">
 
 
         <LinearLayout
@@ -53,7 +53,7 @@
                     android:layout_width="50dp"
                     android:layout_height="37dp"
                     android:focusable="false"
-                    android:paddingRight="10sp"
+                    android:paddingEnd="10sp"
                     android:contentDescription="@string/favorite_content_rating_view"
                     android:src="@drawable/ratings" />
 
@@ -79,7 +79,7 @@
                     android:layout_width="50dp"
                     android:layout_height="36dp"
                     android:focusable="false"
-                    android:paddingRight="10sp"
+                    android:paddingEnd="10sp"
                     android:contentDescription="@string/favorite_content_comment_view"
                     android:src="@drawable/chat" />
 

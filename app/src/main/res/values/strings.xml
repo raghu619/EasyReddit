@@ -13,6 +13,7 @@
     <string name="toast_sorting_message">Sorting cannot be applied to Home and Favourites.</string>
 
     <string name="favorites_toast_message">SuccessFully added as a Favorite</string>
+    <string name="favorites_deleted_toast_message">SuccessFully Deleted From Favorites</string>
 
     <string name="share_link_url">url</string>
     <string name="share_link_title">Share link</string>
@@ -33,6 +34,8 @@
 
     <string name="no_internet_no_connection_text">Make Sure that Device is Connected to Internet</string>
 
+    <string name="no_favorites">No Favorites</string>
+
     <string name="no_internet_tab_retry_text">Tab to Retry</string>
 
     <string name="no_internet_tab_retry_image_button">retry Image button</string>
@@ -49,6 +52,21 @@
     <string name="reddit_list_item_rating_view">1245</string>
 
     <string name="reddit_list_item_rating_view_image_description">ratings view</string>
+
+    <string name="reddit_list_toolbar_string">toolbar_title</string>
+
+    <string name="reddit_detail_content_reddit_image">Reddit Image</string>
+
+    <string name="reddit_detail_content_comment_image">Comments view</string>
+
+    <string name="reddit_detail_content_rating_image">ratings view</string>
+
+    <string name="reddit_detail_content_favorite_button_image">Adding Favorite</string>
+    <string name="reddit_detail_content_share_button_image">Share post</string>
+
+
+
+
 
 
     <!--<string name="unsupported_content_provider_exception">Unsupported Uri</string>-->
@@ -162,22 +180,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <string name="Subreddits_shared_preferences">com.udacity.easyreddit</string>
+    <string name="Subreddits_shared_preferences">com.udacity.easyreddit</string>
              <string name="subreddits_key">SUBREDDIT_KEY</string>
 
 
