@@ -1,16 +1,15 @@
 package com.example.android.easyreddit.fragments;
 
 
-
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -19,7 +18,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +31,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -44,6 +41,7 @@ import com.example.android.easyreddit.googleanalytics.AnalyticsApplication;
 import com.example.android.easyreddit.model.CommentData;
 import com.example.android.easyreddit.ui.MainActivity;
 import com.example.android.easyreddit.utils.GlideApp;
+import com.example.android.easyreddit.widget.FavoriteWidget;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.HitBuilders;
@@ -85,6 +83,22 @@ public class RedditDetailFragment extends Fragment implements LoaderManager.Load
     private Tracker mTracker;
 
 
+  public   interface ProgressBarLoad{
+
+        void onSucessfulLoad();
+
+    }
+
+
+    private ProgressBarLoad OnLoad;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        OnLoad=(ProgressBarLoad)context;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,17 +126,17 @@ public class RedditDetailFragment extends Fragment implements LoaderManager.Load
 
         GlideApp.with(getActivity()).load(String.valueOf(mextras.get(getString(R.string.reddit_data_url)))).diskCacheStrategy(DiskCacheStrategy.DATA).listener(new
            RequestListener<Drawable>() {
-           @Override
-           public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+               @Override
+               public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
 
-               mprogressbar.setVisibility(View.GONE);
-               return false;
-           }
+                   mprogressbar.setVisibility(View.GONE);
+                   return false;
+               }
 
-           @Override
-           public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-               mprogressbar.setVisibility(View.GONE);
+               @Override
+               public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                   mprogressbar.setVisibility(View.GONE);
 
                    return false;
                }
@@ -130,19 +144,19 @@ public class RedditDetailFragment extends Fragment implements LoaderManager.Load
 
 
         mcomments_data = getArguments().getParcelableArrayList(getString(R.string.fragment_comments_data));
-        if(mcommentViewAdapter!=null)
-            mcommentViewAdapter=null;
+        if (mcommentViewAdapter != null)
+            mcommentViewAdapter = null;
         mcommentViewAdapter = new CommentsViewAdapter(getActivity(), mcomments_data);
 
         mRecyclerView.setAdapter(mcommentViewAdapter);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setNestedScrollingEnabled(false);
+
         mcomments.setText(String.valueOf(mextras.getInt(getString(R.string.reddit_data_num_comments))));
         mscore.setText(String.valueOf(mextras.getInt(getString(R.string.reddit_data_score))));
         mheaderTextView.setText(mextras.getString(getString(R.string.reddit_data_title)));
-
-
+        OnLoad.onSucessfulLoad();
         initLoader();
 
 
@@ -184,11 +198,8 @@ public class RedditDetailFragment extends Fragment implements LoaderManager.Load
 
 
                 }
+                updateMyWidgets(getContext());
 
-                Context context = getContext();
-                Intent dataUpdatedIntent = new Intent(getString(R.string.data_update_key))
-                        .setPackage(context.getPackageName());
-                context.sendBroadcast(dataUpdatedIntent);
             }
         });
 
@@ -292,6 +303,19 @@ public class RedditDetailFragment extends Fragment implements LoaderManager.Load
         super.onResume();
         mTracker.setScreenName(getString(R.string.tracker_screen_detail_activity));
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+
+    public static void updateMyWidgets(Context context) {
+
+        AppWidgetManager man = AppWidgetManager.getInstance(context);
+        int[] ids = man.getAppWidgetIds(
+                new ComponentName(context, FavoriteWidget.class));
+        Intent dataUpdatedIntent = new Intent(context.getString(R.string.data_update_key))
+                .setPackage(context.getPackageName());
+        dataUpdatedIntent.putExtra(context.getString(R.string.widget_id_key), ids);
+        context.sendBroadcast(dataUpdatedIntent);
+
     }
 
 

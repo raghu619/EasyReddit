@@ -84,7 +84,7 @@
                         android:layout_width="37dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
-                        android:contentDescription="ratings view"
+                        android:contentDescription="@string/reddit_detail_content_rating_image"
                         android:src="@drawable/ratings" />
 
                     <TextView
@@ -94,6 +94,7 @@
                         android:layout_gravity="center"
                         android:gravity="center_vertical"
                         android:paddingStart="7dp"
+                        android:paddingEnd="7dp"
                         android:text="@string/reddit_list_item_rating_view"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -120,6 +121,7 @@
                     android:layout_weight="0.15"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
+                    android:focusable="true"
                     android:contentDescription="@string/reddit_detail_content_share_button_image"
                     android:src="@drawable/ic_more_vert_white_24dp" />
 
@@ -182,11 +184,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
+
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="173dp"
-        android:layout_marginLeft="173dp"
+
         android:visibility="gone"
         android:id="@+id/fragment_progress_bar"
         android:layout_marginBottom="211dp" />

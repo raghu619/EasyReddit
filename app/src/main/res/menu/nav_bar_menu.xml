@@ -9,16 +9,10 @@
         <item
             android:id="@+id/action_favourites"
             android:icon="@drawable/star_black_fivepointed_shape"
-            android:title="favorites" />
+            android:title="@string/nav_bar_favorite_string" />
     </group>
-
-
-
-
-
-
     <group android:id="@+id/subscribed_group">
-        <item android:title="Subreddits"/>
+        <item android:title="@string/nav_bar_subreddit_string"/>
     </group>
 
 

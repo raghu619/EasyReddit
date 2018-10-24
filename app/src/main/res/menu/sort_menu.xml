@@ -4,12 +4,12 @@
     <item
         android:id="@+id/menuSearch"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="search"
+        android:title="@string/sort_menu_search_string"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
     <item
         android:icon="@drawable/ic_menu_sort_white_24dp"
-        android:title="sort"
+        android:title="@string/sort_menu_title_string"
         android:id="@+id/menuSort"
         app:showAsAction="always">
         <menu>

@@ -27,12 +27,12 @@
 
     </include>
 
-    <include
-        layout="@layout/no_internet_layout"
-        android:id="@+id/no_internet_layout_id"
-        android:visibility="gone"
+        <include
+            layout="@layout/no_internet_layout"
+            android:id="@+id/no_internet_layout_id"
+            android:visibility="gone"
 
-        ></include>
+            />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
