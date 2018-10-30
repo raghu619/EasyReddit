@@ -28,4 +28,12 @@
         android:layout_height="match_parent"
         >
     </FrameLayout>
+    <include
+        layout="@layout/no_internet_layout"
+        android:id="@+id/no_internet_reddit_detail_layout_id"
+        android:visibility="gone"
+        />
+
+
+
 </android.support.design.widget.CoordinatorLayout>

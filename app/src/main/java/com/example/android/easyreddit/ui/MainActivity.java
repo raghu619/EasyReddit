@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         mreddit_item_list = new ArrayList<RedditData>();
         mProgressDialog.setMessage(getString(R.string.dialog_message));
         mProgressDialog.setTitle(getString(R.string.dialog_title));
-
         mNoFavoritesView.setVisibility(View.GONE);
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mvolleyNetworkQueue = AnalyticsApplication.getmInstance();
