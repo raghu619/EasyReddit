@@ -23,30 +23,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.RedditDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
-
+        <activity
+            android:name=".ui.RedditDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
-            android:authorities="com.udacity.easyreddit"
             android:name=".data.FavoriteContentProvider"
+            android:authorities="com.udacity.easyreddit"
             android:enabled="true"
-            android:exported="false">
-
-            
-        </provider>
+            android:exported="false"></provider>
 
         <receiver android:name=".widget.FavoriteWidget">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="com.udacity.easyreddit.ACTION_DATA_UPDATED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.udacity.easyreddit.ACTION_DATA_UPDATED" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/favorite_widget" />
-
         </receiver>
 
         <service
@@ -55,16 +50,14 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3940256099942544~3347511713" />
 
+        <activity android:name=".ui.MangeSubreddit"></activity>
     </application>
 
 </manifest>
