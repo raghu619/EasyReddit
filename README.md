@@ -1,4 +1,6 @@
 # EasyReddit
+It is a Udacity Final capstone Project Which I SuccessFully Reviewed and Completed. This App displays Updated Reddits News Fetched
+From Reddit Api .Also allows users to sort and to favorite subreddits or also allows to share the subreddit url And this app had a Favorites Widget Feature also.Which allows users to set their favorite subreddits in the phone  home Screen
 
 
 # Screenshots
