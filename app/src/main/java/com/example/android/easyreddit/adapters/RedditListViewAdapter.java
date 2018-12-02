@@ -40,9 +40,15 @@ public class RedditListViewAdapter extends RecyclerView.Adapter<RedditListViewAd
 
     public RedditListViewAdapter(Context mcontext, List<RedditData> mlistItemsList) {
         this.mlistItemsList = mlistItemsList;
+<<<<<<< HEAD
 
         this.mContext = mcontext;
 
+=======
+
+        this.mContext = mcontext;
+
+>>>>>>> 3e90bbb9578d538acbeef5f70caaca92efb1842f
     }
 
     @Override

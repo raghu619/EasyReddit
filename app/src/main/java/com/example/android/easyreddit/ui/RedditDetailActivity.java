@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,6 +23,7 @@ import com.example.android.easyreddit.fragments.RedditDetailFragment;
 import com.example.android.easyreddit.googleanalytics.AnalyticsApplication;
 import com.example.android.easyreddit.model.CommentData;
 import com.example.android.easyreddit.utils.AppConstants;
+import com.example.android.easyreddit.utils.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,19 +62,19 @@ public class RedditDetailActivity extends AppCompatActivity  implements RedditDe
     CommentsProcessor processor;
 
     SharedPreferences mprefs;
-
-
     @BindView(R.id.toolbar)
     Toolbar mtoolbar;
-
     Bundle receiving_data;
-
     private ProgressDialog mdialog;
+    @BindView(R.id.no_internet_reddit_detail_layout_id)
+    View no_internet_layout_id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reddit_detail);
+<<<<<<< HEAD
 
         mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
 
@@ -130,23 +132,27 @@ public class RedditDetailActivity extends AppCompatActivity  implements RedditDe
           //  mdialog.dismiss();
 
 
+=======
+        ButterKnife.bind(this);
+        if(NetworkUtils.isNetworkAvailable(getApplicationContext())) {
+            no_internet_layout_id.setVisibility(View.GONE);
+            initView(savedInstanceState);
+>>>>>>> 3e90bbb9578d538acbeef5f70caaca92efb1842f
         }
+        else
+          no_internet_layout_id.setVisibility(View.VISIBLE);
 
 
     }
+
 
     private void initFragmentView(ArrayList<CommentData> mcomments_data) {
 
 
         RedditDetailFragment redditDetailFragment = new RedditDetailFragment();
-
-
         Bundle data = new Bundle();
-
         data.putParcelableArrayList(getString(R.string.fragment_comments_data), mcomments_data);
-
         redditDetailFragment.setArguments(data);
-
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frameLayout, redditDetailFragment)
                 .commit();
@@ -288,6 +294,62 @@ public class RedditDetailActivity extends AppCompatActivity  implements RedditDe
 
 
     }
+
+    private void initView(Bundle savedInstanceState) {
+        mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
+        global_data = AnalyticsApplication.getmInstance();
+        mdialog = new ProgressDialog(this);
+        mdialog.setTitle(getString(R.string.dialog_title));
+        mdialog.setCancelable(false);
+        mdialog.setCanceledOnTouchOutside(false);
+        mdialog.setIndeterminate(false);
+        mdialog.setMessage(getString(R.string.dialog_message));
+        mdialog.show();
+        setSupportActionBar(mtoolbar);
+        receiving_data = getIntent().getExtras();
+
+        id = receiving_data.getString(getString(R.string.reddit_data_id));
+
+        commentsUrl = AppConstants.reddit_base_url + receiving_data.getString(getString(R.string.reddit_data_permalink)) + AppConstants.jsonExt;
+        setTitle(receiving_data.getString(getString(R.string.reddit_data_subreddit)));
+
+        Log.v(LOG_TAG, receiving_data.getString(getString(R.string.reddit_data_subreddit)));
+
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+
+        if (savedInstanceState == null) {
+            processor = new CommentsProcessor() {
+                @Override
+                public void onSuccessLoad(ArrayList<CommentData> mcomments_data) {
+
+                    initFragmentView(mcomments_data);
+
+
+
+                }
+            };
+
+
+            new CommentsAsyncTask().execute();
+
+
+        } else {
+
+            mcomments_data.clear();
+            mcomments_data = savedInstanceState.getParcelableArrayList(getString(R.string.saved_instance_commments_key));
+            initFragmentView(mcomments_data);
+
+
+
+        }
+    }
+
+
 
 
 

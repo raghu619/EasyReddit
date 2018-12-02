@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         mreddit_item_list = new ArrayList<RedditData>();
         mProgressDialog.setMessage(getString(R.string.dialog_message));
         mProgressDialog.setTitle(getString(R.string.dialog_title));
-
         mNoFavoritesView.setVisibility(View.GONE);
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mvolleyNetworkQueue = AnalyticsApplication.getmInstance();
@@ -166,8 +165,13 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
         mTwoPane = findViewById(R.id.reddititem_detail_container) != null;
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 3e90bbb9578d538acbeef5f70caaca92efb1842f
         initView(mSaveInstance);
 
     }
