@@ -112,6 +112,7 @@
                     android:layout_gravity="center"
                     android:gravity="center_vertical"
                     android:paddingStart="7dp"
+                    android:paddingEnd="7dp"
                     android:text="@string/reddit_list_item_rating_view"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 

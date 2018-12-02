@@ -4,7 +4,7 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.Cursor;
 
-public class FavoriteCursorLoader  extends AsyncTaskLoader<Cursor> {
+public class FavoriteCursorLoader extends AsyncTaskLoader<Cursor> {
 
 
     public FavoriteCursorLoader(Context context) {
@@ -13,49 +13,45 @@ public class FavoriteCursorLoader  extends AsyncTaskLoader<Cursor> {
     }
 
 
-     Cursor mCursor=null;
+    Cursor mCursor = null;
 
 
-        @Override
-        protected void onStartLoading() {
+    @Override
+    protected void onStartLoading() {
 
-            if(mCursor!=null)
-                deliverResult(mCursor);
+        if (mCursor != null)
+            deliverResult(mCursor);
 
-            else
-                forceLoad();
+        else
+            forceLoad();
 
 
+    }
+
+    @Override
+    public Cursor loadInBackground() {
+
+        try {
+
+            return getContext().getContentResolver().query(FavoriteContract.favorite.CONTENT_URI, null,
+                    FavoriteContract.favorite.COLUMN_FAVORITES + "=?", new String[]{Integer.toString(1)}, null);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+
+            return null;
 
         }
 
-        @Override
-        public Cursor loadInBackground() {
 
-            try {
+    }
 
-                return getContext().getContentResolver().query(FavoriteContract.favorite.CONTENT_URI,null,
-                        FavoriteContract.favorite.COLUMN_FAVORITES+"=?",new String[]{Integer.toString(1)},null);
-                }
-
-                catch (Exception e){
-
-                    e.printStackTrace();
-
-
-                   return null;
-
-                }
-
-
-            }
-
-            @Override
-            public void deliverResult(Cursor data) {
-                mCursor=data;
-                super.deliverResult(data);
-            }
-
+    @Override
+    public void deliverResult(Cursor data) {
+        mCursor = data;
+        super.deliverResult(data);
+    }
 
 
 }

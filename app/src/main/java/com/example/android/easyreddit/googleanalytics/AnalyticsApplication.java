@@ -8,7 +8,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.example.android.easyreddit.R;
-import com.example.android.easyreddit.utils.AppRequestGlobal;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -17,7 +16,7 @@ public class AnalyticsApplication extends Application {
     private static GoogleAnalytics sAnalytics;
     private static Tracker sTracker;
     private RequestQueue mRequestQueue;
-    private  static AnalyticsApplication mInstance;
+    private static AnalyticsApplication mInstance;
 
 
     @Override
@@ -26,7 +25,7 @@ public class AnalyticsApplication extends Application {
 
         sAnalytics = GoogleAnalytics.getInstance(this);
 
-        mInstance=(AnalyticsApplication)getApplicationContext();
+        mInstance = (AnalyticsApplication) getApplicationContext();
     }
 
 
@@ -40,36 +39,34 @@ public class AnalyticsApplication extends Application {
     }
 
 
-    private synchronized RequestQueue getmRequestQueue(){
+    private synchronized RequestQueue getmRequestQueue() {
 
-        if(mRequestQueue==null){
+        if (mRequestQueue == null) {
 
-            mRequestQueue = Volley.newRequestQueue( mInstance, new HurlStack());
+            mRequestQueue = Volley.newRequestQueue(mInstance, new HurlStack());
 
         }
-        return  mRequestQueue;
+        return mRequestQueue;
 
     }
 
-    public synchronized <T>void  add_request_to_queue(Request<T> request){
+    public synchronized <T> void add_request_to_queue(Request<T> request) {
 
         request.setTag("data");
         request.setShouldCache(false);
-        request.setRetryPolicy(new DefaultRetryPolicy(30000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(30000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         getmRequestQueue().add(request);
 
 
     }
 
 
-    public static AnalyticsApplication getmInstance(){
+    public static AnalyticsApplication getmInstance() {
 
 
         return mInstance;
 
     }
-
-
 
 
 }

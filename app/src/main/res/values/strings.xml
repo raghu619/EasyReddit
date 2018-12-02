@@ -67,6 +67,18 @@
 
 
 
+    <string name="nav_bar_favorite_string">favorites</string>
+    <string name="nav_bar_subreddit_string">Subreddits</string>
+
+    <string name="sort_menu_search_string">search</string>
+
+    <string name="sort_menu_title_string">sort</string>
+
+
+
+
+
+
 
 
     <!--<string name="unsupported_content_provider_exception">Unsupported Uri</string>-->
@@ -216,6 +228,7 @@
 
     <string translatable="false" name="data_update_key">com.udacity.easyreddit.ACTION_DATA_UPDATED</string>
     <string translatable="false" name="arg_item_id">item_id</string>
+    <string name="widget_id_key" translatable="false">mywidgetproviderwidgetids</string>
 
 
 

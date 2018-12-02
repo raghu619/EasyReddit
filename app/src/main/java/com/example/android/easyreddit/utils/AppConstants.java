@@ -4,8 +4,7 @@ package com.example.android.easyreddit.utils;
  * Created by raghvendra on 24/9/18.
  */
 
-public class AppConstants
-{
+public class AppConstants {
 
 
     public static final String reddit_base_url = "https://www.reddit.com/";
@@ -16,11 +15,6 @@ public class AppConstants
     public static final String sort = "sort=";
     public static final String qCount = "?count=";
     public static final String after = "&after=";
-
-
-
-
-
 
 
 }

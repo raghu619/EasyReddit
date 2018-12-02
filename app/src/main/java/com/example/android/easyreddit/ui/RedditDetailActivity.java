@@ -1,30 +1,22 @@
 package com.example.android.easyreddit.ui;
 
-import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Parcelable;
-import android.support.v4.app.NavUtils;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.android.easyreddit.R;
 import com.example.android.easyreddit.fragments.RedditDetailFragment;
 import com.example.android.easyreddit.googleanalytics.AnalyticsApplication;
@@ -42,13 +34,20 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RedditDetailActivity extends AppCompatActivity {
+public class RedditDetailActivity extends AppCompatActivity  implements RedditDetailFragment.ProgressBarLoad{
 
 
     private AnalyticsApplication global_data;
     ArrayList<CommentData> mcomments_data = new ArrayList<>();
 
     private static String LOG_TAG = RedditDetailActivity.class.getSimpleName();
+
+    @Override
+    public void onSucessfulLoad() {
+
+        mdialog.dismiss();
+
+/**/    }
 
     interface CommentsProcessor {
 
@@ -83,7 +82,9 @@ public class RedditDetailActivity extends AppCompatActivity {
         mdialog = new ProgressDialog(this);
 
         mdialog.setTitle(getString(R.string.dialog_title));
-
+        mdialog.setCancelable(false);
+        mdialog.setCanceledOnTouchOutside(false);
+        mdialog.setIndeterminate(false);
         mdialog.setMessage(getString(R.string.dialog_message));
         ButterKnife.bind(this);
         mdialog.show();
@@ -110,7 +111,8 @@ public class RedditDetailActivity extends AppCompatActivity {
                 public void onSuccessLoad(ArrayList<CommentData> mcomments_data) {
 
                     initFragmentView(mcomments_data);
-                    mdialog.dismiss();
+                 // mdialog.dismiss();
+
 
 
                 }
@@ -125,7 +127,7 @@ public class RedditDetailActivity extends AppCompatActivity {
             mcomments_data.clear();
             mcomments_data = savedInstanceState.getParcelableArrayList(getString(R.string.saved_instance_commments_key));
             initFragmentView(mcomments_data);
-            mdialog.dismiss();
+          //  mdialog.dismiss();
 
 
         }
@@ -286,6 +288,9 @@ public class RedditDetailActivity extends AppCompatActivity {
 
 
     }
+
+
+
 
 
 }

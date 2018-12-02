@@ -54,6 +54,7 @@
                     android:layout_height="37dp"
                     android:focusable="false"
                     android:paddingEnd="10sp"
+                    android:paddingStart="10sp"
                     android:contentDescription="@string/favorite_content_rating_view"
                     android:src="@drawable/ratings" />
 
@@ -63,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp"
+
                     android:gravity="end"
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
@@ -80,6 +81,7 @@
                     android:layout_height="36dp"
                     android:focusable="false"
                     android:paddingEnd="10sp"
+                    android:paddingStart="10sp"
                     android:contentDescription="@string/favorite_content_comment_view"
                     android:src="@drawable/chat" />
 

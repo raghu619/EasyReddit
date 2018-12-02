@@ -1,6 +1,5 @@
 package com.example.android.easyreddit.ui;
 
-import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,8 +10,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -20,22 +18,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +40,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.easyreddit.R;
 import com.example.android.easyreddit.adapters.RedditListViewAdapter;
 import com.example.android.easyreddit.data.FavoriteContract;
-import com.example.android.easyreddit.data.FavoriteCursorLoader;
 import com.example.android.easyreddit.fragments.RedditDetailFragment;
 import com.example.android.easyreddit.googleanalytics.AnalyticsApplication;
 import com.example.android.easyreddit.model.CommentData;
@@ -69,21 +61,21 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements RedditListViewAdapter.OnItemClickListener,LoaderManager.LoaderCallbacks<Cursor>,RedditDetailActivity.CommentsProcessor {
+public class MainActivity extends AppCompatActivity implements RedditListViewAdapter.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, RedditDetailActivity.CommentsProcessor {
 
-    private static final int DRAWER_MENU_GROUP_ID=34;
-    public  static  int   COLUMN_POST_ID=1;
-    public  static  int   COLUMN_AUTHOR=2;
-    public  static  int   COLUMN_THUMBNAIL=3;
-    public  static  int   COLUMN_TITLE=4;
-    public  static  int   COLUMN_PERMALINK=5;
-    public  static  int   COLUMN_URL=6;
-    public  static  int   COLUMN_IMAGE_URL=7;
-    public  static  int   COLUMN_POINTS=8;
-    public  static  int   COLUMN_COMMENTS=9;
-    public  static  int   COLUMN_FAVORITES=10;
-    public  static  int   COLUMN_POSTED_ON=11;
-    public  static  int   COLUMN_SUBREDDIT =12;
+    private static final int DRAWER_MENU_GROUP_ID = 34;
+    public static int COLUMN_POST_ID = 1;
+    public static int COLUMN_AUTHOR = 2;
+    public static int COLUMN_THUMBNAIL = 3;
+    public static int COLUMN_TITLE = 4;
+    public static int COLUMN_PERMALINK = 5;
+    public static int COLUMN_URL = 6;
+    public static int COLUMN_IMAGE_URL = 7;
+    public static int COLUMN_POINTS = 8;
+    public static int COLUMN_COMMENTS = 9;
+    public static int COLUMN_FAVORITES = 10;
+    public static int COLUMN_POSTED_ON = 11;
+    public static int COLUMN_SUBREDDIT = 12;
     private static String LOG_TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -106,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     Menu drawerMenu;
     SharedPreferences mprefs;
 
-    int position=0;
-    private  Tracker mTracker;
+    int position = 0;
+    private Tracker mTracker;
     private AnalyticsApplication mvolleyNetworkQueue;
-    private  Bundle  mSaveInstance;
+    private Bundle mSaveInstance;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ArrayList<RedditData> mreddit_item_list = new ArrayList<RedditData>();
+    private ArrayList<RedditData> mreddit_item_list;
     private String sortBy = "";
     private String subReddit = "";
 
@@ -122,9 +114,9 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
     private Menu sortMenu;
     private SearchView mSearchView;
-    private String titleString="";
+    private String titleString = "";
     private ProgressDialog mProgressDialog;
-    private  ArrayList<CommentData> mcomments_data=new ArrayList<>();
+    private ArrayList<CommentData> mcomments_data = new ArrayList<>();
 
 
     @Override
@@ -132,15 +124,16 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mProgressDialog=new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(this);
+        mreddit_item_list = new ArrayList<RedditData>();
         mProgressDialog.setMessage(getString(R.string.dialog_message));
         mProgressDialog.setTitle(getString(R.string.dialog_title));
 
         mNoFavoritesView.setVisibility(View.GONE);
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mvolleyNetworkQueue =AnalyticsApplication.getmInstance();
+        mvolleyNetworkQueue = AnalyticsApplication.getmInstance();
         mTracker = application.getDefaultTracker();
-        mSaveInstance=savedInstanceState;
+        mSaveInstance = savedInstanceState;
         settingUpToolBar();
         drawerMenu = mNavigationView.getMenu();
         mprefs = this.getSharedPreferences(getString(R.string.Subreddits_shared_preferences), Context.MODE_PRIVATE);
@@ -153,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             public void onRefresh() {
 
 
-                final  Bundle savedInstance=mSaveInstance;
+                final Bundle savedInstance = mSaveInstance;
                 initView(savedInstance);
                 Toast.makeText(MainActivity.this, getString(R.string.refresh_toast_message), Toast.LENGTH_SHORT).show();
 
@@ -166,20 +159,16 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             @Override
             public void onClick(View v) {
 
-                initView( mSaveInstance);
+                initView(mSaveInstance);
 
             }
         });
 
 
-
-        if(findViewById(R.id.reddititem_detail_container)!=null)
-            mTwoPane=true;
-        else
-            mTwoPane=false;
+        mTwoPane = findViewById(R.id.reddititem_detail_container) != null;
 
 
-        initView( mSaveInstance);
+        initView(mSaveInstance);
 
     }
 
@@ -189,39 +178,34 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             main_content_layout.setVisibility(View.VISIBLE);
             if (savedInstanceState == null) {
 
-                if(TextUtils.isEmpty(titleString)) {
+                if (TextUtils.isEmpty(titleString)) {
                     makingCustomUrl(getResources().getString(R.string.HomePage));
                     getSupportActionBar().setTitle(R.string.HomePage);
-                }
-                else {
+                } else {
                     makingCustomUrl(titleString);
                     toolbar.setTitle(titleString);
 
                 }
 
 
+                Log.v(LOG_TAG, subReddit);
 
 
-
-                Log.v(LOG_TAG,subReddit);
-
-
-            }
-            else {
+            } else {
 
 
-               subReddit=savedInstanceState.getString(getString(R.string.reddit_list_toolbar_string));
-               if(!mrefresherLayout.isRefreshing())
-               getSupportActionBar().setTitle(subReddit);
+                subReddit = savedInstanceState.getString(getString(R.string.reddit_list_toolbar_string));
+                if (!mrefresherLayout.isRefreshing())
+                    getSupportActionBar().setTitle(subReddit);
 
                 mreddit_item_list = savedInstanceState.getParcelableArrayList(getString(R.string.listitems));
-                if(adapter!=null)
-                    adapter=null;
+                if (adapter != null)
+                    adapter = null;
                 adapter = new RedditListViewAdapter(this, mreddit_item_list);
                 mRecyclerView.setAdapter(adapter);
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
                 mRecyclerView.setHasFixedSize(true);
-                if(mrefresherLayout.isRefreshing())
+                if (mrefresherLayout.isRefreshing())
                     mrefresherLayout.setRefreshing(false);
                 adapter.SetOnItemClickListener(this);
 
@@ -229,39 +213,30 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             }
 
 
+        } else {
 
 
-
-            //sortView(false, getString(R.string.sort));
-
-
-        }
-
-        else{
-
-
-          no_internet_layout_id.setVisibility(View.VISIBLE);
-          main_content_layout.setVisibility(View.GONE);
+            no_internet_layout_id.setVisibility(View.VISIBLE);
+            main_content_layout.setVisibility(View.GONE);
 
 
         }
-
 
 
     }
 
     private void settingNavbarSubreddits() {
-      if(mprefs.getBoolean(getString(R.string.first_run),true)){
+        if (mprefs.getBoolean(getString(R.string.first_run), true)) {
 
-         mprefs.edit().putString(getString(R.string.subreddits_key),getString(R.string.initial_subs)).commit();
-         mprefs.edit().putBoolean(getString(R.string.first_run),false).commit();
+            mprefs.edit().putString(getString(R.string.subreddits_key), getString(R.string.initial_subs)).commit();
+            mprefs.edit().putBoolean(getString(R.string.first_run), false).commit();
 
-      }
+        }
 
         String subString = mprefs.getString(getString(R.string.subreddits_key), "");
-        List<String>mItems= Arrays.asList(subString.split(","));
-        for(int i=0;i<mItems.size();i++){
-            MenuItem item=drawerMenu.add(DRAWER_MENU_GROUP_ID, Menu.NONE, Menu.NONE,mItems.get(i));
+        List<String> mItems = Arrays.asList(subString.split(","));
+        for (int i = 0; i < mItems.size(); i++) {
+            MenuItem item = drawerMenu.add(DRAWER_MENU_GROUP_ID, Menu.NONE, Menu.NONE, mItems.get(i));
             item.setIcon(R.drawable.reddit_logo);
 
         }
@@ -270,338 +245,285 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         mNavigationView.setItemIconTintList(null);
 
 
-
-      }
+    }
 
     private void settingUpNavigationView() {
 
-                    mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
 
-                            mNoFavoritesView.setVisibility(View.GONE);
-                            mrefresherLayout.setEnabled(true);
+                mNoFavoritesView.setVisibility(View.GONE);
+                mrefresherLayout.setEnabled(true);
 
 
-                            if(item.getGroupId()==R.id.fav_group){
+                if (item.getGroupId() == R.id.fav_group) {
 
 
-                                initFavoriteLoader();
-                                toolbar.setTitle(getString(R.string.title_favourites));
-                                mDrawerLayout.closeDrawers();
+                    initFavoriteLoader();
+                    toolbar.setTitle(getString(R.string.title_favourites));
+                    mDrawerLayout.closeDrawers();
 
-                                titleString=getString(R.string.title_favourites);
+                    titleString = getString(R.string.title_favourites);
 
-                                return true;
-                            }
+                    return true;
+                }
 
-                            if(item.getGroupId()==R.id.subscribed_group){
-
-
-                                mDrawerLayout.closeDrawers();
-
-                                return true;
-                            }
-                            else {
-                                makingCustomUrl(item.toString());
-
-                                titleString = item.toString();
-                            }
+                if (item.getGroupId() == R.id.subscribed_group) {
 
 
-                            mDrawerLayout.closeDrawers();
-                            return true;
+                    mDrawerLayout.closeDrawers();
+
+                    return true;
+                } else {
+                    makingCustomUrl(item.toString());
+
+                    titleString = item.toString();
+                }
+
+
+                mDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
+
+
+    }
+
+
+    private void settingUpDrawerLayout() {
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+
+    }
+
+    private void settingUpToolBar() {
+
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+
+    }
+
+
+    public void makingCustomUrl(String subReddit) {
+
+
+        this.subReddit = subReddit;
+
+        toolbar.setTitle(subReddit);
+
+        String subRedditSortBy = "";
+        if (!TextUtils.isEmpty(sortBy)) {
+
+            subRedditSortBy = "/" + sortBy;
+        }
+
+        if (mSearchView != null) {
+            mSearchView.setQuery("", false);
+            mSearchView.setIconified(true);
+        }
+
+        if (subReddit.equals(getResources().getString(R.string.HomePage))) {
+            subReddit = AppConstants.reddit_base_url + AppConstants.json_end;
+            sortView(false, getString(R.string.sort));
+
+
+        } else {
+
+            sortView(true, getString(R.string.sort));
+
+            subReddit = AppConstants.reddit_base_url + AppConstants.subreddit_url +
+                    subReddit +
+                    subRedditSortBy +
+                    AppConstants.json_end;
+        }
+
+        updateList(subReddit);
+
+
+    }
+
+
+    public void updateList(String url) {
+
+
+        Log.d(LOG_TAG, url);
+
+
+        adapter = new RedditListViewAdapter(this, mreddit_item_list);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter.SetOnItemClickListener(this);
+
+        adapter.clearAdapter();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+
+                Log.d(LOG_TAG, response.toString());
+
+
+                try {
+
+                    JSONObject data = response.getJSONObject(getString(R.string.reddit_json_data_key));
+                    after_id = data.getString(getString(R.string.reddit_json_after_key));
+                    JSONArray children_array = data.getJSONArray(getString(R.string.reddit_json_children_key));
+                    for (int i = 0; i < children_array.length(); i++)
+
+                    {
+                        JSONObject each_object = children_array.getJSONObject(i).getJSONObject(getString(R.string.reddit_json_data_key));
+
+                        RedditData data_item = new RedditData();
+
+                        data_item.setTitle(each_object.getString(getString(R.string.reddit_json_title_key)));
+                        data_item.setAuthor(each_object.getString(getString(R.string.reddit_json_author_key)));
+                        data_item.setNumComments(each_object.getInt(getString(R.string.reddit_json_num_comments_key)));
+                        data_item.setScore(each_object.getInt(getString(R.string.reddit_json_score_key)));
+                        data_item.setThumbnail(each_object.getString(getString(R.string.reddit_json_thumbnail_key)));
+                        data_item.setOver18(each_object.getBoolean(getString(R.string.reddit_json_over_18_key)));
+                        data_item.setUrl(each_object.getString(getString(R.string.reddit_json_url_key)));
+                        data_item.setId(each_object.getString(getString(R.string.reddit_json_id_key)));
+                        data_item.setSubreddit(each_object.getString(getString(R.string.reddit_json_subreddit_key)));
+                        data_item.setPermalink(each_object.getString(getString(R.string.reddit_json_permalink_key)));
+                        data_item.setPostedOn(each_object.getLong(getString(R.string.reddit_json_created_utc_key)));
+
+
+                        try {
+                            data_item.setImageUrl(each_object.getJSONObject(getString(R.string.reddit_json_preview_key))
+                                    .getJSONArray(getString(R.string.reddit_json_images_key))
+                                    .getJSONObject(0)
+                                    .getJSONArray(getString(R.string.reddit_json_resolutions_key))
+                                    .getJSONObject(5).getString(getString(R.string.reddit_json_url_key)));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+
                         }
-                    });
 
 
-                }
+                        if (mreddit_item_list == null) {
+                            mreddit_item_list = new ArrayList<>();
+                        }
+                        mreddit_item_list.add(data_item);
 
 
+                    }
 
 
-                private void settingUpDrawerLayout() {
-
-                    mDrawerToggle=new ActionBarDrawerToggle(this,mDrawerLayout,toolbar,
-                            R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-                    mDrawerLayout.addDrawerListener(mDrawerToggle);
-                    mDrawerToggle.syncState();
-
-
-                }
-
-                private void settingUpToolBar() {
-
-                    setSupportActionBar(toolbar);
-                    toolbar.setTitle(getTitle());
-                    getSupportActionBar().setDisplayShowHomeEnabled(false);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-                    toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
 
                 }
 
 
+                adapter.notifyDataSetChanged();
 
+                if (!mrefresherLayout.isRefreshing()) {
 
+                    if (mTwoPane) {
 
 
-               public  void makingCustomUrl(String subReddit) {
+                        String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(0).getPermalink() + AppConstants.jsonExt;
+                        mProgressDialog.show();
+                        mProgressDialog.setCancelable(false);
+                        mProgressDialog.setCanceledOnTouchOutside(false);
 
+                        fetchingCommentsFromUrl(commentsUrl, MainActivity.this);
 
-                   this.subReddit = subReddit;
-
-                   toolbar.setTitle(subReddit);
-
-                   String subRedditSortBy = "";
-                   if (!TextUtils.isEmpty(sortBy)) {
-
-                       subRedditSortBy = "/" + sortBy;
-                   }
-
-                   if (mSearchView != null) {
-                       mSearchView.setQuery("", false);
-                       mSearchView.setIconified(true);
-                   }
-
-                   if (subReddit.equals(getResources().getString(R.string.HomePage))) {
-                       subReddit = AppConstants.reddit_base_url + AppConstants.json_end;
-                       sortView(false, getString(R.string.sort));
-
-
-                   } else {
-
-                       sortView(true, getString(R.string.sort));
-
-                       subReddit = AppConstants.reddit_base_url + AppConstants.subreddit_url +
-                               subReddit +
-                               subRedditSortBy +
-                               AppConstants.json_end;
-                   }
-
-                   updateList(subReddit);
-
-
-               }
-
-
-
-
-
-
-
-
-
-                public void updateList( String url)
-                {
-
-
-                    Log.d(LOG_TAG, url);
-
-
-
-                    adapter=new RedditListViewAdapter(this,mreddit_item_list);
-                    mRecyclerView.setAdapter(adapter);
-                    mRecyclerView.setHasFixedSize(true);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-                    adapter.SetOnItemClickListener(this);
-
-                    adapter.clearAdapter();
-                    JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response)
-                        {
-
-
-                            Log.d(LOG_TAG, response.toString());
-
-
-                            try {
-
-                                            JSONObject data = response.getJSONObject(getString(R.string.reddit_json_data_key));
-                                            after_id = data.getString(getString(R.string.reddit_json_after_key));
-                                            JSONArray children_array=data.getJSONArray(getString(R.string.reddit_json_children_key));
-                                                        for(int i=0;i<children_array.length();i++)
-
-                                                        {
-                                                               JSONObject each_object=children_array.getJSONObject(i).getJSONObject(getString(R.string.reddit_json_data_key));
-
-                                                               RedditData data_item=new RedditData();
-
-                                                               data_item.setTitle(each_object.getString(getString(R.string.reddit_json_title_key)));
-                                                               data_item.setAuthor(each_object.getString(getString(R.string.reddit_json_author_key)));
-                                                               data_item.setNumComments(each_object.getInt(getString(R.string.reddit_json_num_comments_key)));
-                                                               data_item.setScore(each_object.getInt(getString(R.string.reddit_json_score_key)));
-                                                               data_item.setThumbnail(each_object.getString(getString(R.string.reddit_json_thumbnail_key)));
-                                                               data_item.setOver18(each_object.getBoolean(getString(R.string.reddit_json_over_18_key)));
-                                                               data_item.setUrl(each_object.getString(getString(R.string.reddit_json_url_key)));
-                                                               data_item.setId(each_object.getString(getString(R.string.reddit_json_id_key)));
-                                                               data_item.setSubreddit(each_object.getString(getString(R.string.reddit_json_subreddit_key)));
-                                                               data_item.setPermalink(each_object.getString(getString(R.string.reddit_json_permalink_key)));
-                                                               data_item.setPostedOn(each_object.getLong(getString(R.string.reddit_json_created_utc_key)));
-
-
-                                                           try
-                                                           {
-                                                               data_item.setImageUrl(each_object.getJSONObject(getString(R.string.reddit_json_preview_key))
-                                                                       .getJSONArray(getString(R.string.reddit_json_images_key))
-                                                                       .getJSONObject(0)
-                                                                       .getJSONArray(getString(R.string.reddit_json_resolutions_key))
-                                                                       .getJSONObject(5).getString(getString(R.string.reddit_json_url_key)));
-
-                                                           }
-
-                                                           catch (JSONException e)
-                                                           {
-                                                               e.printStackTrace();
-
-                                                           }
-
-
-                                                            if ( mreddit_item_list == null) {
-                                                                mreddit_item_list = new ArrayList<>();
-                                                            }
-                                                            mreddit_item_list.add(data_item);
-
-
-
-
-                                                        }
-
-
-
-                                                       }
-                                                        catch (JSONException e)
-                                                           {
-                                                               e.printStackTrace();
-
-                                                           }
-
-
-
-                                                    adapter.notifyDataSetChanged();
-
-                                        if(!mrefresherLayout.isRefreshing()) {
-
-                                            if (mTwoPane) {
-
-
-                                                String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(0).getPermalink() + AppConstants.jsonExt;
-                                                 mProgressDialog.show();
-                                                mProgressDialog.setCancelable(false);
-                                                mProgressDialog.setCanceledOnTouchOutside(false);
-
-                                                fetchingCommentsFromUrl(commentsUrl, MainActivity.this);
-
-                                            }
-
-                                        }
-
-                                                    if(mrefresherLayout.isRefreshing())
-                                                        mrefresherLayout.setRefreshing(false);
-
-
-
-
-
-
-
-
-
-                                  }  }, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-
-                                            } });
-                    mvolleyNetworkQueue.add_request_to_queue(jsonObjectRequest);
+                    }
 
                 }
 
-
-                @Override
-                public void OnItemClick(View view, int position) {
-
-                     RedditData data_item=mreddit_item_list.get(position);
-                      if( mTwoPane) {
-                          this.position=position;
-                          String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(position).getPermalink() + AppConstants.jsonExt;
-                          mProgressDialog.show();
-                          mProgressDialog.setCancelable(false);
-                          mProgressDialog.setCanceledOnTouchOutside(false);
-                          fetchingCommentsFromUrl(commentsUrl,this);
-                      }
+                if (mrefresherLayout.isRefreshing())
+                    mrefresherLayout.setRefreshing(false);
 
 
-                    else {
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        mvolleyNetworkQueue.add_request_to_queue(jsonObjectRequest);
+
+    }
 
 
-                          Intent DetailActivityIntent = new Intent(getBaseContext(), RedditDetailActivity.class);
+    @Override
+    public void OnItemClick(View view, int position) {
 
-                          Bundle sending_arguments = new Bundle();
-
-                          sending_arguments.putString(getString(R.string.reddit_data_title), data_item.getTitle());
-                          sending_arguments.putString(getString(R.string.reddit_data_thumbnail), data_item.getThumbnail());
-                          sending_arguments.putLong(getString(R.string.reddit_data_posted_on), data_item.getPostedOn());
-                          sending_arguments.putInt(getString(R.string.reddit_data_num_comments), data_item.getNumComments());
-                          sending_arguments.putString(getString(R.string.reddit_data_permalink), data_item.getPermalink());
-                          sending_arguments.putString(getString(R.string.reddit_data_id), data_item.getId());
-                          sending_arguments.putString(getString(R.string.reddit_data_author), data_item.getAuthor());
-                          sending_arguments.putString(getString(R.string.reddit_data_subreddit), data_item.getSubreddit());
-                          sending_arguments.putString(getString(R.string.reddit_data_image_url), data_item.getImageUrl());
-                          sending_arguments.putString(getString(R.string.reddit_data_url), data_item.getUrl());
-                          sending_arguments.putInt(getString(R.string.reddit_data_score), data_item.getScore());
-
-                          DetailActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                          DetailActivityIntent.putExtras(sending_arguments);
+        RedditData data_item = mreddit_item_list.get(position);
+        if (mTwoPane) {
+            this.position = position;
+            String commentsUrl = AppConstants.reddit_base_url + mreddit_item_list.get(position).getPermalink() + AppConstants.jsonExt;
+            mProgressDialog.show();
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            fetchingCommentsFromUrl(commentsUrl, this);
+        } else {
 
 
-                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                  startActivity(DetailActivityIntent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-                              }
-                          }
-                          else {
+            Intent DetailActivityIntent = new Intent(getBaseContext(), RedditDetailActivity.class);
 
-                              startActivity(DetailActivityIntent);
+            Bundle sending_arguments = new Bundle();
 
-                          }
+            sending_arguments.putString(getString(R.string.reddit_data_title), data_item.getTitle());
+            sending_arguments.putString(getString(R.string.reddit_data_thumbnail), data_item.getThumbnail());
+            sending_arguments.putLong(getString(R.string.reddit_data_posted_on), data_item.getPostedOn());
+            sending_arguments.putInt(getString(R.string.reddit_data_num_comments), data_item.getNumComments());
+            sending_arguments.putString(getString(R.string.reddit_data_permalink), data_item.getPermalink());
+            sending_arguments.putString(getString(R.string.reddit_data_id), data_item.getId());
+            sending_arguments.putString(getString(R.string.reddit_data_author), data_item.getAuthor());
+            sending_arguments.putString(getString(R.string.reddit_data_subreddit), data_item.getSubreddit());
+            sending_arguments.putString(getString(R.string.reddit_data_image_url), data_item.getImageUrl());
+            sending_arguments.putString(getString(R.string.reddit_data_url), data_item.getUrl());
+            sending_arguments.putInt(getString(R.string.reddit_data_score), data_item.getScore());
+
+            DetailActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            DetailActivityIntent.putExtras(sending_arguments);
+            startActivity(DetailActivityIntent);
 
 
-                      }
+        }
 
 
-
-                }
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
 
-
-
-        return new CursorLoader(this,FavoriteContract.favorite.CONTENT_URI,null,
-                FavoriteContract.favorite.COLUMN_FAVORITES+"=?",new String[]{Integer.toString(1)},null);
+        return new CursorLoader(this, FavoriteContract.favorite.CONTENT_URI, null,
+                FavoriteContract.favorite.COLUMN_FAVORITES + "=?", new String[]{Integer.toString(1)}, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
+        if (adapter != null)
+            adapter = null;
 
-
-        if(adapter!=null)
-            adapter.clearAdapter();
-
-
-        if(data.getCount()==0)
+        if (data.getCount() == 0)
             mNoFavoritesView.setVisibility(View.VISIBLE);
 
-                mrefresherLayout.setEnabled(false);
 
-                 gettingDataFromCursor(data);
-
-                 adapter.SetOnItemClickListener(this);
+        gettingDataFromCursor(data);
+        adapter.SetOnItemClickListener(this);
+        adapter.notifyDataSetChanged();
+        mrefresherLayout.setEnabled(false);
 
 
     }
@@ -609,13 +531,16 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+        if (adapter != null)
+            adapter = null;
+
+        mrefresherLayout.setEnabled(true);
 
 
     }
 
 
-
-    private  void gettingDataFromCursor(Cursor cursor) {
+    private void gettingDataFromCursor(Cursor cursor) {
         mreddit_item_list.clear();
         if (cursor != null) {
 
@@ -639,53 +564,40 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
 
             }
-            if(adapter!=null)
-               adapter=null;
+            if (adapter != null)
+                adapter = null;
 
             updateView(mreddit_item_list);
 
         }
-     }
+    }
 
 
-     private  void updateView( ArrayList<RedditData> reddit_item_list){
+    private void updateView(ArrayList<RedditData> reddit_item_list) {
 
 
-        adapter=new RedditListViewAdapter(this,reddit_item_list);
+        adapter = new RedditListViewAdapter(this, reddit_item_list);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setHasFixedSize(true);
-
-
-
-
-     }
-
-
-
-
-
-
-
-
-
-    private  void initFavoriteLoader(){
-
-
-        getLoaderManager().initLoader(0,null,this);
-        adapter.notifyDataSetChanged();
-
 
 
     }
 
 
+    private void initFavoriteLoader() {
+
+
+        getLoaderManager().initLoader(0, null, this);
+
+
+    }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sort_menu,menu);
-        this.sortMenu=menu;
-        mSearchView=(SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menuSearch));
+        getMenuInflater().inflate(R.menu.sort_menu, menu);
+        this.sortMenu = menu;
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.menuSearch));
         settingSearchView(mSearchView);
         return super.onCreateOptionsMenu(menu);
 
@@ -701,9 +613,9 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
 
                 mSearchView.clearFocus();
 
-               settingSearchQuery(subReddit,query);
+                settingSearchQuery(subReddit, query);
 
-               return true;
+                return true;
 
             }
 
@@ -714,28 +626,26 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         });
 
 
-
-
     }
 
-    private void settingSearchQuery(String subreddit, String searchQuery){
+    private void settingSearchQuery(String subreddit, String searchQuery) {
 
-        this.subReddit=subreddit;
+        this.subReddit = subreddit;
         toolbar.setTitle(subreddit);
-        String searchQuerySetup=AppConstants.search_json+"?q="+searchQuery;
-        if(subReddit.equals(getResources().getString(R.string.HomePage))){
+        String searchQuerySetup = AppConstants.search_json + "?q=" + searchQuery;
+        if (subReddit.equals(getResources().getString(R.string.HomePage))) {
             subreddit = AppConstants.reddit_base_url + searchQuerySetup;
-            sortView(true,getString(R.string.sort));
-            sortView(false,getString(R.string.sort));
+            sortView(true, getString(R.string.sort));
+            sortView(false, getString(R.string.sort));
 
-        }else {
+        } else {
 
-            sortView(true,getString(R.string.sort));
+            sortView(true, getString(R.string.sort));
 
-            subreddit =  AppConstants.reddit_base_url + AppConstants.subreddit_url + subreddit + "/"+searchQuerySetup;
+            subreddit = AppConstants.reddit_base_url + AppConstants.subreddit_url + subreddit + "/" + searchQuerySetup;
         }
 
-        updateList( subreddit);
+        updateList(subreddit);
 
 
     }
@@ -748,10 +658,10 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             return true;
         }
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.menuSortHot:
-                sortBy=getString(R.string.sort_category_hot);
+                sortBy = getString(R.string.sort_category_hot);
                 break;
             case R.id.menuSortNew:
                 sortBy = getString(R.string.sort_category_new);
@@ -767,23 +677,20 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                 return super.onOptionsItemSelected(item);
 
 
-
-
-
         }
-      makingCustomUrl(this.subReddit);
-        return  true;
+        makingCustomUrl(this.subReddit);
+        return true;
 
     }
 
 
-    public void sortView(boolean showMenu, String title){
+    public void sortView(boolean showMenu, String title) {
         if (sortMenu == null)
             return;
 
 
-        for(int i=0;i<sortMenu.size();i++){
-            if(title.equals(sortMenu.getItem(i).getTitle())){
+        for (int i = 0; i < sortMenu.size(); i++) {
+            if (title.equals(sortMenu.getItem(i).getTitle())) {
                 sortMenu.getItem(i).setVisible(showMenu);
 
 
@@ -793,27 +700,25 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         }
 
 
-
-
     }
 
-    public void initFragment(RedditData redditData,ArrayList<CommentData> mcomments_data){
+    public void initFragment(RedditData redditData, ArrayList<CommentData> mcomments_data) {
 
         Bundle arguments = setBundleArgumentsRedditData(redditData);
-        arguments.putParcelableArrayList(getString(R.string.fragment_comments_data),mcomments_data);
+        arguments.putParcelableArrayList(getString(R.string.fragment_comments_data), mcomments_data);
 
-      RedditDetailFragment fragment=new RedditDetailFragment();
+        RedditDetailFragment fragment = new RedditDetailFragment();
 
         fragment.setArguments(arguments);
 
 
-      getSupportFragmentManager().beginTransaction().replace(R.id.reddititem_detail_container,fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.reddititem_detail_container, fragment).commit();
         mProgressDialog.dismiss();
 
     }
 
 
-    public Bundle setBundleArgumentsRedditData(RedditData  item){
+    public Bundle setBundleArgumentsRedditData(RedditData item) {
         Bundle arguments = new Bundle();
         arguments.putString(getString(R.string.reddit_data_title), item.getTitle());
         arguments.putString(getString(R.string.reddit_data_subreddit), item.getSubreddit());
@@ -836,13 +741,12 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         super.onSaveInstanceState(outState);
 
 
-        outState.putParcelableArrayList(getString(R.string.listitems),mreddit_item_list);
+        outState.putParcelableArrayList(getString(R.string.listitems), mreddit_item_list);
 
 
-        outState.putString(getString(R.string.reddit_list_toolbar_string),subReddit);
+        outState.putString(getString(R.string.reddit_list_toolbar_string), toolbar.getTitle().toString());
 
     }
-
 
 
     private boolean isNetworkAvailable() {
@@ -862,8 +766,7 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
             no_internet_layout_id.setVisibility(View.GONE);
             main_content_layout.setVisibility(View.VISIBLE);
 
-            }
-            else {
+        } else {
 
             no_internet_layout_id.setVisibility(View.VISIBLE);
             main_content_layout.setVisibility(View.GONE);
@@ -875,23 +778,20 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     }
 
 
-
-
     @Override
     public void onSuccessLoad(ArrayList<CommentData> mcomments_data) {
 
 
-        initFragment(mreddit_item_list.get(position),mcomments_data);
+        initFragment(mreddit_item_list.get(position), mcomments_data);
 
 
     }
 
 
-    public void fetchingCommentsFromUrl(String url, final RedditDetailActivity.CommentsProcessor processor){
+    public void fetchingCommentsFromUrl(String url, final RedditDetailActivity.CommentsProcessor processor) {
 
 
-
-        JsonArrayRequest jsonArRequest=new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
@@ -914,26 +814,16 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
                         settingCommentsData(data_object);
 
 
-
-
-
                     }
 
 
                     processor.onSuccessLoad(mcomments_data);
 
 
-
-
-
-
                 } catch (JSONException e) {
 
                     e.printStackTrace();
                 }
-
-
-
 
 
             }
@@ -948,59 +838,42 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         });
 
 
-       mvolleyNetworkQueue.add_request_to_queue(jsonArRequest);
-
-
+        mvolleyNetworkQueue.add_request_to_queue(jsonArRequest);
 
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
     private void settingCommentsData(JSONObject data_object) {
 
 
-
-        CommentData commentData=new CommentData();
+        CommentData commentData = new CommentData();
 
         try {
 
 
-
-            commentData.setHtmlText(data_object.getString( getString(R.string.comments_json_body_key)));
-            Log.v("Checking_values",data_object.getString( getString(R.string.comments_json_body_key))+"\n"
-                    +data_object.getLong("created_utc"));
-            int points=data_object.getInt( getString(R.string.comments_json_ups_key))-data_object.getInt(getString(R.string.comments_json_downs_key));
-            commentData.setPoints(points+"");
+            commentData.setHtmlText(data_object.getString(getString(R.string.comments_json_body_key)));
+            Log.v("Checking_values", data_object.getString(getString(R.string.comments_json_body_key)) + "\n"
+                    + data_object.getLong("created_utc"));
+            int points = data_object.getInt(getString(R.string.comments_json_ups_key)) - data_object.getInt(getString(R.string.comments_json_downs_key));
+            commentData.setPoints(points + "");
             commentData.setAuthor(data_object.getString(getString(R.string.comments_json_author_key)));
             commentData.setPostedOn(getDate(data_object.getLong(getString(R.string.comments_json_created_utc_key))));
             mcomments_data.add(commentData);
 
 
-        }
-
-        catch (Exception e){
-
-
-
-           }
+        } catch (Exception e) {
 
 
         }
 
-    private  String getDate(long time) {
+
+    }
+
+    private String getDate(long time) {
 
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(time*1000);
+        cal.setTimeInMillis(time * 1000);
         String date = DateFormat.format("HH:mm  dd/MM/yy", cal).toString();
         return date;
 
@@ -1011,14 +884,15 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
     protected void onResume() {
         super.onResume();
 
-        if(isNetworkAvailable())settingNavbarSubreddits();
+        if (isNetworkAvailable()) settingNavbarSubreddits();
+
+        if (adapter != null)
+            adapter = null;
 
 
+        if (mSaveInstance == null) {
 
-        if(mSaveInstance==null) {
 
-            if(adapter!=null)
-                adapter=null;
             if (TextUtils.isEmpty(titleString)) {
 
                 getSupportActionBar().setTitle(R.string.HomePage);
@@ -1039,9 +913,6 @@ public class MainActivity extends AppCompatActivity implements RedditListViewAda
         mTracker.setScreenName(getString(R.string.tracker_main_list_activiy));
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
-
-
-
 
 
 }

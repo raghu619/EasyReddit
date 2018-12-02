@@ -10,7 +10,7 @@ import android.os.Parcelable;
 public class CommentData implements Parcelable
 
 {
-    String htmlText,author,points,postedOn;
+    String htmlText, author, points, postedOn;
 
     int level;
 
@@ -59,14 +59,12 @@ public class CommentData implements Parcelable
         this.level = level;
     }
 
-    public CommentData(Parcel in)
-    {
+    public CommentData(Parcel in) {
         this.htmlText = in.readString();
         this.author = in.readString();
         this.points = in.readString();
         this.postedOn = in.readString();
         this.level = in.readInt();
-
 
 
     }
@@ -89,8 +87,7 @@ public class CommentData implements Parcelable
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.htmlText);
         dest.writeString(this.author);
         dest.writeString(this.points);

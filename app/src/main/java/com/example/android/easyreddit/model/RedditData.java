@@ -10,7 +10,6 @@ import android.os.Parcelable;
 public class RedditData implements Parcelable {
 
 
-
     private String title;
     private String thumbnail;
     private String url;
@@ -21,7 +20,7 @@ public class RedditData implements Parcelable {
 
     private String imageUrl;
 
-    private int score,numComments;
+    private int score, numComments;
     private Boolean over18;
 
     public RedditData() {
@@ -29,13 +28,11 @@ public class RedditData implements Parcelable {
     }
 
 
-    public int getScore()
-    {
+    public int getScore() {
         return score;
     }
 
-    public void setScore(int score)
-    {
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -56,16 +53,13 @@ public class RedditData implements Parcelable {
     }
 
 
-
-    public String getImageUrl()
-    {
+    public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-
 
 
     public String getId() {
@@ -136,24 +130,19 @@ public class RedditData implements Parcelable {
     }
 
 
-
-
-
-    public RedditData(Parcel in)
-    {
-                 this.title=in.readString();
-                 this.thumbnail = in.readString();
-                 this.url = in.readString();
-                 this.subreddit = in.readString();
-                 this.author = in.readString();
-                 this.permalink = in.readString();
-                 this.id = in.readString();
-                 this.postedOn = in.readLong();
-                 this.imageUrl = in.readString();
-                 this.score = in.readInt();
-                 this.numComments = in.readInt();
-                 this.over18 = (Boolean) in.readValue(Boolean.class.getClassLoader());
-
+    public RedditData(Parcel in) {
+        this.title = in.readString();
+        this.thumbnail = in.readString();
+        this.url = in.readString();
+        this.subreddit = in.readString();
+        this.author = in.readString();
+        this.permalink = in.readString();
+        this.id = in.readString();
+        this.postedOn = in.readLong();
+        this.imageUrl = in.readString();
+        this.score = in.readInt();
+        this.numComments = in.readInt();
+        this.over18 = (Boolean) in.readValue(Boolean.class.getClassLoader());
 
 
     }
@@ -176,25 +165,20 @@ public class RedditData implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-            dest.writeString(this.title);
-            dest.writeString(this.thumbnail);
-            dest.writeString(this.url);
-            dest.writeString(this.subreddit);
-            dest.writeString(this.author);
-            dest.writeString(this.permalink);
-            dest.writeString(this.id);
-            dest.writeLong(this.postedOn);
-            dest.writeString(this.imageUrl);
-            dest.writeInt(this.score);
-            dest.writeInt(this.numComments);
-            dest.writeValue(this.over18);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeString(this.thumbnail);
+        dest.writeString(this.url);
+        dest.writeString(this.subreddit);
+        dest.writeString(this.author);
+        dest.writeString(this.permalink);
+        dest.writeString(this.id);
+        dest.writeLong(this.postedOn);
+        dest.writeString(this.imageUrl);
+        dest.writeInt(this.score);
+        dest.writeInt(this.numComments);
+        dest.writeValue(this.over18);
 
 
-
-
-
-
-      }
+    }
 }
